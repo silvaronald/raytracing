@@ -1,6 +1,6 @@
 #include "Color.h"
 
-void Color::set (float red, float green, float blue) {
+Color::Color (float red, float green, float blue) {
     this->red = red;
     truncate(this->red);
 

@@ -7,7 +7,7 @@ public:
     float green = 0;
     float blue = 0;
 
-    void set(float red, float green, float blue);
+    Color (float red, float green, float blue);
     void truncate(float &value);
 };
 
