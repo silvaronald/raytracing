@@ -1,3 +1,3 @@
 #!/bin/bash
-g++ *.cpp tools/*.cpp -o main
+g++ *.cpp tools/*.cpp camera/*.cpp -o main
 ./main

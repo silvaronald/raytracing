@@ -10,6 +10,7 @@ public:
     Vector3D (float x, float y, float z);
     void multiply (float factor);
     Vector3D crossProduct (Vector3D vector2);
+    void normalize ();
 };
 
 #endif /* VECTOR3D_H */

@@ -1,4 +1,5 @@
 #include "Vector3D.h"
+#include <cmath>
 
 Vector3D::Vector3D (float x, float y, float z) {
     this->x = x;
@@ -18,4 +19,12 @@ Vector3D Vector3D::crossProduct(Vector3D vector2) {
     float z = (this->x * vector2.y) - (this->y * vector2.x);
 
     return Vector3D(x, y, z);
+}
+
+void Vector3D::normalize() {
+    float norm = sqrt(pow(this->x, 2) + pow(this->y, 2) + pow(this->z, 2));
+
+    this->x /= norm;
+    this->y /= norm;
+    this->z /= norm;
 }

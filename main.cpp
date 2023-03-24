@@ -1,26 +1,14 @@
 #include "tools/Color.h"
 #include "tools/Point3D.h"
 #include "tools/Vector3D.h"
+#include "camera/Camera.h"
 
 #include "iostream"
 
 int main () {
-    Point3D point(1, -1, 2);
-    Point3D point1(5, 3, -2.5);
+    Camera camera(50, 50, 150, Vector3D(1,1,1), Point3D(0, 0, 5), Point3D(0, 0, 0));
 
-    Vector3D vector(2, 2, 0);
-
-    //std::cout << point.x << " " << point.y << " " << point.z << "\n";
-
-    point = point.sumVectorToPoint(vector);
-
-    //std::cout << point.x << " " << point.y << " " << point.z << "\n";
-
-    Vector3D vector1 = point.getVectorToPoint(point1);
-
-    std::cout << vector1.x << " " << vector1.y << " " << vector1.z << "\n";
-
-    Vector3D vecCross = vector.crossProduct(vector1);
-
-    std::cout << vecCross.x << " " << vecCross.y << " " << vecCross.z << "\n";
+    std::cout << camera.vectorW.x << " " << camera.vectorW.y << " " << camera.vectorW.z << "\n";
+    std::cout << camera.vectorX.x << " " << camera.vectorX.y << " " << camera.vectorX.z << "\n";
+    std::cout << camera.vectorY.x << " " << camera.vectorY.y << " " << camera.vectorY.z << "\n";
 }
