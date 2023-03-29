@@ -3,9 +3,11 @@
 #include "tools/Vector3D.h"
 #include "camera/Camera.h"
 
+#include <vector>
 #include "iostream"
 
 int main () {
+    std::vector<Camera> cameras;
     Camera camera(50, 50, 150, Vector3D(1,1,1), Point3D(0, 0, 5), Point3D(0, 0, 0));
 
     std::cout << camera.vectorW.x << " " << camera.vectorW.y << " " << camera.vectorW.z << "\n";

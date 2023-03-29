@@ -22,9 +22,26 @@ Vector3D Vector3D::crossProduct(Vector3D vector2) {
 }
 
 void Vector3D::normalize() {
-    float norm = sqrt(pow(this->x, 2) + pow(this->y, 2) + pow(this->z, 2));
+    float norm = this->getNorm();
 
     this->x /= norm;
     this->y /= norm;
     this->z /= norm;
+}
+
+float Vector3D::getNorm() {
+    return sqrt(pow(this->x, 2) + pow(this->y, 2) + pow(this->z, 2));
+}
+
+float Vector3D::dotProduct(Vector3D vector2) {
+    return (this->x * vector2.x + this->y * vector2.y + this->z * vector2.z);
+}
+
+Vector3D Vector3D::projectOnto(Vector3D vector2) {
+    Vector3D projection = vector2;
+    projection.normalize();
+
+    projection.multiply(this->dotProduct(vector2) / vector2.getNorm());
+
+    return projection;
 }
