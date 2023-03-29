@@ -1,4 +1,7 @@
 #include "Sphere.h"
+#include <algorithm>
+#include <cmath>
+#include "iostream"
 
 Sphere::Sphere(Point3D center, 
         float radius, 
@@ -23,18 +26,44 @@ Sphere::Sphere(Point3D center,
 }
 
 float Sphere::intercept(Point3D point, Vector3D vector) {
-    Vector3D assistVector = Vector3D (this->center.x - point.x, this->center.y - point.y, this->center.z - point.z);
+    // check implementation on notion page
+    float a = vector.dotProduct(vector);
 
-    Vector3D projectionVector = assistVector.projectOnto(vector);
+    Vector3D centerToPoint = Vector3D(point.x - this->center.x, point.y - this->center.y, point.z - this->center.z);
 
-    Point3D projectionPoint = point.sumVectorToPoint(projectionVector);
+    float b = 2 * vector.dotProduct(centerToPoint);
 
-    if (projectionPoint.distanceToPoint(this->center) <= radius) {
-        // intercepts
-        return 0;
-    }
-    
-    else {
+    float c = centerToPoint.dotProduct(centerToPoint) - pow(radius, 2);
+
+    float delta = pow(b, 2) - (4 * a * c);
+
+    if (delta < 0) {
         return -1;
     }
+
+    float t1 = (-b - sqrt(delta)) / (2 * a);
+
+    float t2 = (-b + sqrt(delta)) / (2 * a);
+
+    float t;
+
+    if (t1 <= 1 && t2 <= 1) {
+        return -1;
+    }
+
+    else if (t1 <= 1 && t2 > 1) {
+        t = t2;
+    }
+
+    else if (t2 <= 1 && t1 > 1) {
+        t = t1;
+    }
+
+    else if (t1 > 1 && t2 > 1) {
+        t = std::min(t1, t2);
+    }
+
+    vector.multiply(t);
+
+    return vector.getNorm();
 }
