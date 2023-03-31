@@ -2,14 +2,27 @@
 #include "Vector3D.h"
 #include <cmath>
 
+Point3D::Point3D() {
+    this->x = 0;
+    this->y = 0;
+    this->z = 0;
+}
+
 Point3D::Point3D(float x, float y, float z) {
     this->x = x;
     this->y = y;
     this->z = z;
 }
 
+Point3D Point3D::setCoordinates(float x, float y, float z) {
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    return *this;
+}
+
 Point3D Point3D::sumVectorToPoint(Vector3D vector) {
-    return Point3D(vector.x + this->x, vector.y + this->y, vector.z + this->z);
+    return Point3D(this->x + vector.x, this->y + vector.y, this->z + vector.z);
 }
 
 Vector3D Point3D::getVectorToPoint(Point3D point2) {

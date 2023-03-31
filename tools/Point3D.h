@@ -9,7 +9,9 @@ public:
     float y;
     float z;
 
+    Point3D ();
     Point3D (float x, float y, float z);
+    Point3D setCoordinates (float x, float y, float z);
     Point3D sumVectorToPoint (Vector3D vector);
     Vector3D getVectorToPoint (Point3D point2);
     float distanceToPoint (Point3D point2);
