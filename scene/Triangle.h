@@ -13,6 +13,9 @@ public:
 
     Triangle(Point3D p1, Point3D p2, Point3D p3);
     void getNormal();
+    
+    Point3D interceptToPlane(Point3D point, Vector3D vector);
+    bool isInsideTriangle(Point3D point);
 };
 
 #endif /* TRIANGLE_H */

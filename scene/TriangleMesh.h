@@ -12,19 +12,34 @@ public:
     int numTriangles;
     int numVertices;
     vector<Point3D> vertices;
-    vector<Triangle> triangles; //TODO
+    vector<Triangle> triangles;
     vector<Vector3D> triangleNormals;
     vector<Vector3D> vertexNormals;
     Color color = Color(0, 0, 0);
+
+    float diffuseCoefficient;
+    float specularCoefficient;
+    float ambientCoefficient;
+    float reflectionCoefficient;
+    float transmissionCoefficient;
+    float rugosityCoefficient;
 
     TriangleMesh(
         int numTriangles, 
         int numVertices, 
         vector<Point3D> vertices,
-        vector<Triangle> triangles, //TODO
+        vector<Triangle> triangles,
         vector<Vector3D> triangleNormals,
         vector<Vector3D> vertexNormals, 
-        Color color);
+        Color color,
+        float diffuseCoefficient, 
+        float specularCoefficient,
+        float ambientCoefficient,
+        float reflectionCoefficient,
+        float transmissionCoefficient,
+        float rugosityCoefficient);
+    
+    void intercept(Point3D point, Vector3D vector);
 };
 
 #endif /* TRIANGLEMESH_H */
