@@ -39,7 +39,7 @@ public:
         float transmissionCoefficient,
         float rugosityCoefficient);
     
-    void intercept(Point3D point, Vector3D vector);
+    Point3D intercept(Point3D point, Vector3D vector);
 };
 
 #endif /* TRIANGLEMESH_H */
