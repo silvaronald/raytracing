@@ -20,6 +20,7 @@ public:
     float transmissionCoefficient;
     float rugosityCoefficient;
 
+    Sphere ();
     Sphere (Point3D center, 
         float radius, 
         Color color, 

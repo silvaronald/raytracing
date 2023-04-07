@@ -55,7 +55,7 @@ std::optional<std::pair<Triangle, Point3D>> TriangleMesh::intercept(Point3D poin
         }
         
         // Check if the intersection point is in front of the screen
-        if ((plane_intersect.x - point.x) / vector.x <= 1) {
+        if ((plane_intersect.x - point.x) / vector.x <= 1 || (plane_intersect.y - point.y) / vector.y <= 1 || (plane_intersect.z - point.z) / vector.z <= 1) {
             continue;
         }
 

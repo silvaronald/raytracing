@@ -3,6 +3,8 @@
 #include "../tools/Vector3D.h"
 #include <cmath>
 
+Triangle::Triangle() {}
+
 Triangle::Triangle(Point3D p1, Point3D p2, Point3D p3) {
     this->p1 = p1;
     this->p2 = p2;

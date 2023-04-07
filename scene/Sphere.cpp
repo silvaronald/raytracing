@@ -6,6 +6,8 @@
 #include <optional>
 #include <utility>
 
+Sphere::Sphere() {}
+
 Sphere::Sphere(Point3D center, 
         float radius, 
         Color color, 

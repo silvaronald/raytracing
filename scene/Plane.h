@@ -20,6 +20,7 @@ public:
     float transmissionCoefficient;
     float rugosityCoefficient;
 
+    Plane ();
     Plane (Point3D planePoint, 
         Vector3D normalVector, 
         Color color, 

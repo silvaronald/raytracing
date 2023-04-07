@@ -4,6 +4,8 @@
 #include <iostream>
 #include <optional>
 
+Plane::Plane() {}
+
 Plane::Plane(
     Point3D planePoint, 
     Vector3D normalVector, 
@@ -34,9 +36,9 @@ std::optional<std::pair<Plane, Point3D>> Plane::intercept(Point3D point, Vector3
 
     Vector3D projectionVector = vectorCameraToPlane.projectOnto(vector);
 
-    if ((projectionVector.x / vector.x) <= 1) {
+    if (projectionVector.x / vector.x <= 1 || projectionVector.y / vector.y <= 1 || projectionVector.z / vector.z <= 1) {
         // is at most behind the screen
-        return pair;
+        return std::nullopt;
     }
     
     Point3D projectionPoint = point.sumVectorToPoint(projectionVector);
@@ -46,7 +48,9 @@ std::optional<std::pair<Plane, Point3D>> Plane::intercept(Point3D point, Vector3
     if (vectorPlaneToProjection.dotProduct(normalVector) == 0) {
         // intercepts
         pair = std::make_pair(*this, projectionPoint);
+
+        return pair;
     }
 
-    return pair;
+    return std::nullopt;
 }
