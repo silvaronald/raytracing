@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <utility>
 #include <iostream>
+#include <optional>
 
 Plane::Plane(
     Point3D planePoint, 
@@ -26,14 +27,16 @@ Plane::Plane(
     this->rugosityCoefficient = rugosityCoefficient;
 }
 
-std::pair<Plane*, Point3D*> Plane::intercept(Point3D point, Vector3D vector) {
+std::optional<std::pair<Plane, Point3D>> Plane::intercept(Point3D point, Vector3D vector) {
+    std::optional<std::pair<Plane, Point3D>> pair;
+
     Vector3D vectorCameraToPlane = Vector3D(this->planePoint.x - point.x, this->planePoint.y - point.y, this->planePoint.z - point.z);
 
     Vector3D projectionVector = vectorCameraToPlane.projectOnto(vector);
 
     if ((projectionVector.x / vector.x) <= 1) {
         // is at most behind the screen
-        return std::make_pair(nullptr, nullptr);
+        return pair;
     }
     
     Point3D projectionPoint = point.sumVectorToPoint(projectionVector);
@@ -44,9 +47,8 @@ std::pair<Plane*, Point3D*> Plane::intercept(Point3D point, Vector3D vector) {
 
     if (vectorPlaneToProjection.dotProduct(normalVector) == 0) {
         // intercepts
-        return std::make_pair(this, new Point3D(projectionPoint));
+        pair = std::make_pair(*this, projectionPoint);
     }
-    else {
-        return std::make_pair(nullptr, nullptr);
-    }
+
+    return pair;
 }

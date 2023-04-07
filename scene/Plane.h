@@ -5,6 +5,7 @@
 #include "../tools/Point3D.h"
 #include "../tools/Vector3D.h"
 #include <utility>
+#include <optional>
 
 class Plane {
 public:
@@ -29,7 +30,7 @@ public:
         float transmissionCoefficient,
         float rugosityCoefficient);
 
-    std::pair<Plane*, Point3D*> intercept(Point3D point, Vector3D vector);
+    std::optional<std::pair<Plane, Point3D>> intercept(Point3D point, Vector3D vector);
 };
 
 #endif /* PLANE_H */
