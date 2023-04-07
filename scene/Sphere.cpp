@@ -1,7 +1,10 @@
 #include "Sphere.h"
+
 #include <algorithm>
 #include <cmath>
 #include "iostream"
+#include <optional>
+#include <utility>
 
 Sphere::Sphere(Point3D center, 
         float radius, 
@@ -25,7 +28,9 @@ Sphere::Sphere(Point3D center,
     this->rugosityCoefficient = rugosityCoefficient;
 }
 
-float Sphere::intercept(Point3D point, Vector3D vector) {
+std::optional<std::pair<Sphere, Point3D>> Sphere::intercept(Point3D point, Vector3D vector) {
+    std::optional<std::pair<Sphere, Point3D>> pair;
+
     // check implementation on notion page
     float a = vector.dotProduct(vector);
 
@@ -38,7 +43,7 @@ float Sphere::intercept(Point3D point, Vector3D vector) {
     float delta = pow(b, 2) - (4 * a * c);
 
     if (delta < 0) {
-        return -1;
+        return std::nullopt;
     }
 
     float t1 = (-b - sqrt(delta)) / (2 * a);
@@ -48,7 +53,7 @@ float Sphere::intercept(Point3D point, Vector3D vector) {
     float t;
 
     if (t1 <= 1 && t2 <= 1) {
-        return -1;
+        return std::nullopt;
     }
 
     else if (t1 <= 1 && t2 > 1) {
@@ -65,5 +70,7 @@ float Sphere::intercept(Point3D point, Vector3D vector) {
 
     vector.multiply(t);
 
-    return vector.getNorm();
+    pair = std::make_pair(*this, point.sumVectorToPoint(vector));
+
+    return pair;
 }

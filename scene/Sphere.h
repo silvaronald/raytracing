@@ -4,6 +4,9 @@
 #include "../tools/Point3D.h"
 #include "../tools/Color.h"
 
+#include <optional>
+#include <utility>
+
 class Sphere {
 public:
     Point3D center = Point3D(0, 0, 0);
@@ -26,7 +29,8 @@ public:
         float reflectionCoefficient,
         float transmissionCoefficient,
         float rugosityCoefficient);
-    float intercept (Point3D point, Vector3D vector);
+
+    std::optional<std::pair<Sphere, Point3D>> intercept (Point3D point, Vector3D vector);
 };
 
 #endif /* SPHERE_H */

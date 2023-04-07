@@ -43,8 +43,6 @@ std::optional<std::pair<Plane, Point3D>> Plane::intercept(Point3D point, Vector3
 
     Vector3D vectorPlaneToProjection = Vector3D(this->planePoint.x - projectionPoint.x, this->planePoint.y - projectionPoint.y, this->planePoint.z - projectionPoint.z);
 
-    std::cout << vectorPlaneToProjection.dotProduct(normalVector) << '\n';
-
     if (vectorPlaneToProjection.dotProduct(normalVector) == 0) {
         // intercepts
         pair = std::make_pair(*this, projectionPoint);

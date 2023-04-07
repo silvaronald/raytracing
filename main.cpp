@@ -16,11 +16,9 @@
 int main () {
     Plane plane1 = Plane(Point3D(2, 2, 2), Vector3D(0, 0, 1), Color(0, 0, 0), 0, 0, 0, 0, 0, 0);
 
-    std::pair<Plane*, Point3D*> pair;
+    auto pair = plane1.intercept(Point3D(0, 0, 0), Vector3D(1, 1, 1));
 
-    pair = plane1.intercept(Point3D(0, 0, 0), Vector3D(1, 1, 1));
-
-    if (pair.first == nullptr) {
+    if (!pair) {
         std::cout << "Doesnt intercept\n";
     }
     else {
@@ -29,9 +27,9 @@ int main () {
 
     Plane plane2 = Plane(Point3D(1, 0, 0), Vector3D(0, 0, 1), Color(0, 0, 0), 0, 0, 0, 0, 0, 0);
 
-    pair = plane2.intercept(Point3D(0, 0, 0), Vector3D(1, 1, 1));
+    auto pair2 = plane2.intercept(Point3D(0, 0, 0), Vector3D(1, 1, 1));
 
-    if (pair.first == nullptr) {
+    if (!pair2) {
         std::cout << "Doesnt intercept\n";
     }
     else {
