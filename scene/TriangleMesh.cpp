@@ -2,7 +2,11 @@
 #include "../tools/Point3D.h"
 #include "../tools/Vector3D.h"
 #include "../tools/Color.h"
+#include <cstddef>
 #include <vector>
+#include <limits>
+#include <optional>
+
 using namespace std;
 
 TriangleMesh::TriangleMesh(
@@ -32,37 +36,39 @@ TriangleMesh::TriangleMesh(
     this->reflectionCoefficient = reflectionCoefficient;
     this->transmissionCoefficient = transmissionCoefficient;
     this->rugosityCoefficient = rugosityCoefficient;
-    
 }
 
-Point3D TriangleMesh::intercept(Point3D point, Vector3D vector) {
-    float t_min = INFINITY; // minimum distance to intersection
-    Point3D intersect_point; // intersection point
-    bool has_intersection = false; // flag to indicate if an intersection was found
-    
+std::optional<std::pair<Triangle, Point3D>> TriangleMesh::intercept(Point3D point, Vector3D vector) {
+    float t_min = std::numeric_limits<float>::max(); // minimum distance to intersection
+
+    std::optional<std::pair<Triangle, Point3D>> pair;
+
     // Iterate over all triangles in the mesh
     for (int i = 0; i < numTriangles; i++) {
         Triangle triangle = triangles[i];
         
         // Check if the ray intersects the plane of the triangle
         Point3D plane_intersect = triangle.interceptToPlane(point, vector);
+        
         if (!triangle.isInsideTriangle(plane_intersect)) {
             continue; // skip to next triangle
         }
         
+        // Check if the intersection point is in front of the screen
+        if ((plane_intersect.x - point.x) / vector.x <= 1) {
+            continue;
+        }
+
         // Calculate the distance to the intersection point
         float t = point.distanceToPoint(plane_intersect);
         
         // Check if this is the closest intersection point so far
         if (t < t_min) {
             t_min = t;
-            intersect_point = plane_intersect;
-            has_intersection = true;
+
+            pair = std::make_pair(triangle, plane_intersect);
         }
     }
-    
-    // If an intersection was found, return the intersection point
-    if (has_intersection) {
-        return intersect_point;
-    }
+
+    return pair;
 }

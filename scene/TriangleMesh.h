@@ -5,6 +5,8 @@
 #include "../tools/Color.h"
 #include "Triangle.h"
 #include <vector>
+#include <optional>
+
 using namespace std;
 
 class TriangleMesh {
@@ -39,7 +41,7 @@ public:
         float transmissionCoefficient,
         float rugosityCoefficient);
     
-    Point3D intercept(Point3D point, Vector3D vector);
+    std::optional<std::pair<Triangle, Point3D>> intercept(Point3D point, Vector3D vector);
 };
 
 #endif /* TRIANGLEMESH_H */
