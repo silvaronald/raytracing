@@ -2,6 +2,8 @@
 #include "../tools/Point3D.h"
 #include "../tools/Vector3D.h"
 #include "../tools/Color.h"
+#include "../tools/Matrix4X4.h"
+#include "../tools/MatrixOperations.h"
 #include <cstddef>
 #include <vector>
 #include <limits>
@@ -71,4 +73,46 @@ std::optional<std::pair<Triangle, Point3D>> TriangleMesh::intercept(Point3D poin
     }
 
     return pair;
+}
+
+void TriangleMesh::rotate(double angle, char axis) {
+    vector<Point3D> rotatedVertices;
+
+
+    Point3D center = this->getMeshCenter();
+
+    Matrix4X4 transladeCenter, transladeBack, rotation;
+
+    transladeCenter.toTranslationMatrix(center.x, center.y, center.z);
+    rotation.toRotationMatrix(angle, axis);
+    transladeBack.toTranslationMatrix(-center.x, -center.y, -center.z);
+
+    for (int i=0; i<this->vertices.size(); i++){
+        Point3D cur_vertix = this->vertices.at(i);
+        cur_vertix = pointMatrixMultiplication(cur_vertix.x, cur_vertix.y, cur_vertix.z, transladeCenter);
+        cur_vertix = pointMatrixMultiplication(cur_vertix.x, cur_vertix.y, cur_vertix.z, rotation);
+        cur_vertix = pointMatrixMultiplication(cur_vertix.x, cur_vertix.y, cur_vertix.z, transladeBack);
+        
+        rotatedVertices.push_back(cur_vertix);
+
+    }
+}
+
+Point3D TriangleMesh::getMeshCenter() {
+    float x=0;
+    float y=0;
+    float z=0;
+    
+
+    for (int i=0; i<this->vertices.size(); i++){
+        x += this->vertices.at(i).x;
+        y += this->vertices.at(i).y;
+        z += this->vertices.at(i).z;
+    }
+
+    x /= this->vertices.size();
+    y /= this->vertices.size();
+    z /= this->vertices.size();
+
+    return Point3D(x, y, z);
 }

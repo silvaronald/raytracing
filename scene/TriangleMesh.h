@@ -3,6 +3,8 @@
 
 #include "../tools/Point3D.h"
 #include "../tools/Color.h"
+#include "../tools/Matrix4X4.h"
+#include "../tools/MatrixOperations.h"
 #include "Triangle.h"
 #include <vector>
 #include <optional>
@@ -42,6 +44,11 @@ public:
         float rugosityCoefficient);
     
     std::optional<std::pair<Triangle, Point3D>> intercept(Point3D point, Vector3D vector);
+
+    void translade(float x, float y, float z);
+    void rotate(double angle, char axis);
+
+    Point3D getMeshCenter();
 };
 
 #endif /* TRIANGLEMESH_H */
