@@ -57,3 +57,7 @@ Vector3D Vector3D::projectOnto(Vector3D vector2) {
 
     return projection;
 }
+
+void Vector3D::print() {
+    std::cout << "X: " << this->x << " / Y: " << this->y << " / Z: " << this->z << "\n";
+}

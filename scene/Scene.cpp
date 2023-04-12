@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "Triangle.h"
 
+#include <iostream>
+
 Scene::Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> planes, std::vector<TriangleMesh> triangles, std::vector<Light> lights) {
     this->ambientColor = color;
     this->spheres = spheres;

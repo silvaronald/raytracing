@@ -11,12 +11,11 @@ Camera::Camera (int screenWidth, int screenHeight, float distanceToScreen, Vecto
     this->vectorTarget = Vector3D(target.x - localization.x, target.y - localization.y, target.z - localization.z);
 
     this->vectorW = vectorTarget;
-    this->vectorW.multiply(-1);
     this->vectorW.normalize();
 
     this->vectorX = this->vectorW.crossProduct(this->vectorUp);
     this->vectorX.normalize();
 
-    this->vectorY = this->vectorW.crossProduct(this->vectorX);
+    this->vectorY = this->vectorX.crossProduct(this->vectorW);
     this->vectorY.normalize();
 }

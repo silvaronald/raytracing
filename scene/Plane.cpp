@@ -32,25 +32,29 @@ Plane::Plane(
 std::optional<std::pair<Plane, Point3D>> Plane::intercept(Point3D point, Vector3D vector) {
     std::optional<std::pair<Plane, Point3D>> pair;
 
-    Vector3D vectorCameraToPlane = Vector3D(this->planePoint.x - point.x, this->planePoint.y - point.y, this->planePoint.z - point.z);
+    Vector3D vectorCameraToPlane = point.getVectorToPoint(this->planePoint);
 
-    Vector3D projectionVector = vectorCameraToPlane.projectOnto(vector);
+    float denominator = vector.dotProduct(this->normalVector);
 
-    if (projectionVector.x / vector.x <= 1 || projectionVector.y / vector.y <= 1 || projectionVector.z / vector.z <= 1) {
+    if (denominator == 0) {
+        // line is parallel to plane
+        return std::nullopt;
+    }
+
+    float numerator = vectorCameraToPlane.dotProduct(this->normalVector);
+
+    float t = numerator / denominator;
+
+    if (t <= 1) {
         // is at most behind the screen
         return std::nullopt;
     }
     
-    Point3D projectionPoint = point.sumVectorToPoint(projectionVector);
+    vector.multiply(t);
 
-    Vector3D vectorPlaneToProjection = Vector3D(this->planePoint.x - projectionPoint.x, this->planePoint.y - projectionPoint.y, this->planePoint.z - projectionPoint.z);
+    Point3D intersectionPoint = point.sumVectorToPoint(vector);
 
-    if (vectorPlaneToProjection.dotProduct(normalVector) == 0) {
-        // intercepts
-        pair = std::make_pair(*this, projectionPoint);
+    pair = std::make_pair(*this, intersectionPoint);
 
-        return pair;
-    }
-
-    return std::nullopt;
+    return pair;
 }

@@ -1,6 +1,7 @@
 #ifndef VECTOR3D_H
 #define VECTOR3D_H
 
+#include <iostream>
 class Vector3D {
 public:
     float x;
@@ -15,6 +16,7 @@ public:
     float getNorm ();
     float dotProduct (Vector3D vector2);
     Vector3D projectOnto (Vector3D vector2);
+    void print ();
 };
 
 #endif /* VECTOR3D_H */
