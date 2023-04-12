@@ -57,9 +57,7 @@ vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices
     return vertexNormals, triangleNormals;
 }
 
-
-int main() {
-
+void readFile() {
     std::string linha;
     std::ifstream arquivo("scene.txt");
     
@@ -128,16 +126,27 @@ int main() {
                 sscanf(linha.c_str(), "a %f %f %f", &Ir, &Ig, &Ib);
                 ambientColor = Color(Ir, Ig, Ib);
             }
+            cout << linha << endl;
         }
         //Fecha o arquivo
         arquivo.close();
         
-        //Cria a cena com os objetos lidos do arquivo
-        Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
+        
     }
 
     else std::cout << "Unable to open file";
 
+}
+
+
+int main() {
+    //Lê o arquivo
+    readFile();
+
+    //Cria a cena com os objetos lidos do arquivo
+    Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
+
+    cout << "Scene created" << endl;
 }
 
 
