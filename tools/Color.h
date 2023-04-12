@@ -8,6 +8,10 @@ public:
     float blue = 0;
 
     Color ();
+    
+    void multiplyValue (float value);
+    void multiplyColor (Color color);
+    void sumColor (Color color);
     void setColor (float red, float green, float blue);
     Color (float red, float green, float blue);
     void truncate(float &value);

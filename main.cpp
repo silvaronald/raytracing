@@ -31,6 +31,7 @@ int main () {
     planes.push_back(Plane(Point3D(0, 0, 20000), Vector3D(0, 0, -1), Color(100, 1, 0), 0, 0, 0, 0, 0, 0));
 
     vector<Light> lights;
+    //lights.push_back(Light(Point3D(0, 0, 10000), Color(255, 255, 255), 0, 0, 0, 0, 0, 0));
 
     vector<TriangleMesh> triangles;
 
@@ -128,6 +129,7 @@ int main () {
             }
         }
     }
+    std::cout << "Done!" << endl;
     outfile.close();
 
     return 0;
