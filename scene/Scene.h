@@ -13,6 +13,7 @@
 #include <string>
 #include <limits>
 #include <utility>
+#include <algorithm>
 
 class Scene {
 public:

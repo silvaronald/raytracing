@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Triangle.h"
+#include <algorithm>
 #include <math.h>
 #include <iostream>
 
@@ -98,8 +99,9 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
     }
 
     V = interceptedPoint.getVectorToPoint(point);
+    V.normalize();
 
-    color = this->phong(0.2, this->ambientColor, lights.size(), color, 0.2, N, 0.5, V, 1);
+    color = this->phong(0.5, this->ambientColor, lights.size(), color, 1, N, 1, V, 1);
 
     return color;
 }
@@ -119,41 +121,47 @@ Vector3D Scene::reflexionVector(Vector3D N, Vector3D L) {
 }
 
 Color Scene::phong(float Ka, Color Ia, int m, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float n){
+    // Ambient component
     Color color = Color(0, 0, 0);
     Ia.multiplyValue(Ka);
     color.sumColor(Ia);
+
     for (auto light: this->lights) {
-        Vector3D L = this->lightVector(interceptedPoint, light);
-        cout << "Os dados do vetor L são: "<< L.x << L.y << L.z << "\n" << "Os dados dos pontos sao "  << interceptedPoint.x << interceptedPoint.y << interceptedPoint.z<< endl;
-        cout << "Os dados da luz sao: " << light.localization.x << light.localization.y << light.localization.z << "\n";
+        // Diffuse component
+        Color diffuse = Color(0, 0, 0);
+        diffuse.sumColor(Od);
+
+        diffuse.multiplyColor(light.color);
+
+        diffuse.multiplyValue(Kd);
+
+        Vector3D L = interceptedPoint.getVectorToPoint(light.localization);
+        L.normalize();
+
+        N.normalize();
+
+        float zero = 0;
+
+        diffuse.multiplyValue(std::max(zero, L.dotProduct(N)));
+
+        color.sumColor(diffuse);
+
+        // Specular component
+        // cout << "Os dados do vetor L são: "<< L.x << L.y << L.z << "\n" << "Os dados dos pontos sao "  << interceptedPoint.x << interceptedPoint.y << interceptedPoint.z<< endl;
+        // cout << "Os dados da luz sao: " << light.localization.x << light.localization.y << light.localization.z << "\n";
+        Color specular = light.color;
+
+        specular.multiplyValue(Ks);
+
         Vector3D R  = this->reflexionVector(N, L);
-        auto Ili = light.color;
-        light.color.multiplyValue(Kd);
-        light.color.multiplyColor(Od);
+        R.normalize();
 
+        specular.multiplyValue(std::pow(R.dotProduct(V), n));
 
-        
-        float cosTheta = N.dotProduct(L);
-        if (cosTheta < 0) {
-            cosTheta = 0;
-        }
-
-
-        float cosPhi = R.dotProduct(V);
-
-        if (cosPhi < 0) {
-            cosPhi = 0;
-        }
-
-        light.color.multiplyValue(cosTheta);
-        auto L1 = light.color;
-
-        Ili.multiplyValue(Ks);
-        Ili.multiplyValue(pow(cosPhi, n));
-
-        color.sumColor(L1);
-        color.sumColor(Ili);
+        color.sumColor(specular);
     }
+
+    color.denormalize();
 
     return color;
 }

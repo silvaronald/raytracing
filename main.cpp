@@ -16,26 +16,26 @@
 #include <cmath>
 #include <fstream>
 
-int SCREEN_WIDTH = 90;
-int SCREEN_HEIGHT = 160;
+int SCREEN_WIDTH = 1600;
+int SCREEN_HEIGHT = 900;
 
 int main () {
     Camera camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT, 5, Vector3D(1, 0, 0), Point3D(0, 0, -5), Point3D(0, 0, 0));
 
     vector<Sphere> spheres;
 
-    spheres.push_back(Sphere(Point3D(0, 0, 10000), 7500, Color(0, 0, 200), 0, 0, 0, 0, 0, 0));
+    spheres.push_back(Sphere(Point3D(0, 0, 100), 90, Color(0, 0, 0.75), 0, 0, 0, 0, 0, 0));
 
     vector<Plane> planes;
 
-    planes.push_back(Plane(Point3D(0, 0, 20000), Vector3D(0, 0, -1), Color(100, 1, 0), 0, 0, 0, 0, 0, 0));
+    planes.push_back(Plane(Point3D(0, 0, 20000), Vector3D(0, 0, -1), Color(0.9, 1, 1), 0, 0, 0, 0, 0, 0));
 
     vector<Light> lights;
-    //lights.push_back(Light(Point3D(0, 0, 10000), Color(255, 255, 255), 0, 0, 0, 0, 0, 0));
+    lights.push_back(Light(Point3D(100000, 0, 2000), Color(1, 1, 1)));
 
     vector<TriangleMesh> triangles;
 
-    Scene scene = Scene(Color(255, 255, 255), spheres, planes, triangles, lights);
+    Scene scene = Scene(Color(1, 1, 1), spheres, planes, triangles, lights);
 
     // Raycasting
     ofstream outfile("output.ppm", ios::out | ios::binary);
