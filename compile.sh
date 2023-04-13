@@ -1,3 +1,3 @@
 #!/bin/bash
-g++ *.cpp tools/*.cpp camera/*.cpp scene/*.cpp -o main
+g++ -std=c++17 *.cpp tools/*.cpp camera/*.cpp scene/*.cpp -o main
 ./main

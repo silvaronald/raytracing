@@ -24,6 +24,11 @@ public:
 
     Camera ();
     Camera (int screenWidth, int screenHeight, float distanceToScreen, Vector3D vectorUp, Point3D localization, Point3D target);
+
+    void updateCamera();
+
+    void translade(float x, float y, float z);
+    void rotate(double angle, char axis);
 };
 
 #endif /* CAMERA_H */
