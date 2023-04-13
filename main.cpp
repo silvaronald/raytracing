@@ -24,14 +24,14 @@ int main () {
 
     vector<Sphere> spheres;
 
-    spheres.push_back(Sphere(Point3D(0, 0, 100), 90, Color(0, 0, 0.75), 0, 0, 0, 0, 0, 0));
+    spheres.push_back(Sphere(Point3D(0, 0, 0), 175, Color(0, 0, 1), 0.1, 0.3, 0.01, 0, 0, 0));
 
     vector<Plane> planes;
 
-    planes.push_back(Plane(Point3D(0, 0, 20000), Vector3D(0, 0, -1), Color(0.9, 1, 1), 0, 0, 0, 0, 0, 0));
+    planes.push_back(Plane(Point3D(0, 0, 999999), Vector3D(0, 0, -1), Color(0.5, 1, 0), 0.3, 0.1, 0.1, 0, 0, 1));
 
     vector<Light> lights;
-    lights.push_back(Light(Point3D(100000, 0, 2000), Color(1, 1, 1)));
+    lights.push_back(Light(Point3D(10000, 0, -5), Color(0.85, 0.85, 0.85)));
 
     vector<TriangleMesh> triangles;
 

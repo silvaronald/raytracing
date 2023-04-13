@@ -4,8 +4,12 @@
 #include "../tools/Point3D.h"
 #include "../tools/Color.h"
 #include "Triangle.h"
+
 #include <vector>
 #include <optional>
+#include <cstddef>
+#include <limits>
+#include <tuple>
 
 using namespace std;
 
@@ -26,6 +30,7 @@ public:
     float transmissionCoefficient;
     float rugosityCoefficient;
 
+    TriangleMesh();
     TriangleMesh(
         int numTriangles, 
         int numVertices, 
@@ -41,7 +46,7 @@ public:
         float transmissionCoefficient,
         float rugosityCoefficient);
     
-    std::optional<std::pair<Triangle, Point3D>> intercept(Point3D point, Vector3D vector);
+    std::optional<std::tuple<Triangle, Point3D, TriangleMesh>> intercept(Point3D point, Vector3D vector);
 };
 
 #endif /* TRIANGLEMESH_H */

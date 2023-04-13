@@ -23,12 +23,9 @@ public:
     std::vector<Plane> planes;
     std::vector<TriangleMesh> triangles;
     std::vector<Light> lights;
-    Point3D interceptedPoint;
 
-    
-    Vector3D lightVector(Point3D point, Light lights);
     Vector3D reflexionVector(Vector3D N, Vector3D L);
-    Color phong(float Ka, Color Ia, int m, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float n);
+    Color phong (float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float n, Point3D interceptionPoint);
     Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> planes, std::vector<TriangleMesh> triangles, std::vector<Light> lights);
     Color intercept(Point3D point, Vector3D);
 };
