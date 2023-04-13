@@ -16,7 +16,7 @@ public:
     int numTriangles;
     int numVertices;
     vector<Point3D> vertices;
-    vector<int[3]> trianglesIdxs;
+    vector<vector<int>> trianglesIdxs;
     vector<Triangle> triangles;
     vector<Vector3D> triangleNormals;
     vector<Vector3D> vertexNormals;
@@ -33,7 +33,7 @@ public:
         int numTriangles, 
         int numVertices, 
         vector<Point3D> vertices,
-        vector<int[3]> trianglesIdxs, 
+        vector<vector<int>> trianglesIdxs, 
         Color color,
         float diffuseCoefficient, 
         float specularCoefficient,

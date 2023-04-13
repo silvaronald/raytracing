@@ -15,7 +15,7 @@ TriangleMesh::TriangleMesh(
         int numTriangles, 
         int numVertices, 
         vector<Point3D> vertices,
-        vector<int[3]> trianglesIdxs, 
+        vector<vector<int>> trianglesIdxs, 
         Color color,
         float diffuseCoefficient, 
         float specularCoefficient,
@@ -44,7 +44,7 @@ void TriangleMesh::updateMesh() {
     vector<Triangle> triangles;
 
     for (int i = 0; i < this->numTriangles; i++) {
-        triangles.push_back(Triangle(this->vertices[this->trianglesIdxs.at(i)[0]], this->vertices[this->trianglesIdxs.at(i)[1]], this->vertices[this->trianglesIdxs.at(i)[2]]));
+        triangles.push_back(Triangle(this->vertices.at(this->trianglesIdxs.at(i).at(0)), this->vertices.at(this->trianglesIdxs.at(i).at(1)), this->vertices.at(this->trianglesIdxs.at(i).at(2))));
     }
 
     this->triangles = triangles;
