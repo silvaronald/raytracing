@@ -37,15 +37,15 @@ int main() {
     Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
 
     // Translação
-    // Matrix4X4 translade;
-    // translade.toTranslationMatrix(-200, -200, -200);
+    Matrix4X4 translade;
+    translade.toTranslationMatrix(-100, -100, -100);
 
-    // scene.spheres[0].center = pointMatrixMultiplication(scene.spheres[0].center.x, scene.spheres[0].center.y, scene.spheres[0].center.z, translade);
+    scene.spheres[0].center = pointMatrixMultiplication(scene.spheres[0].center.x, scene.spheres[0].center.y, scene.spheres[0].center.z, translade);
     
     cout << "Scene created" << endl;
 
     // Raycasting
-    ofstream outfile("output.ppm", ios::out | ios::binary);
+    ofstream outfile("output1.ppm", ios::out | ios::binary);
 
     int max_value = 255;
 
@@ -200,7 +200,17 @@ void readFile() {
                 int hres, vres;
                 float d, upx, upy, upz, Cx, Cy, Cz, Mx, My, Mz;
                 sscanf(linha.c_str(), "c %d %d %f %f %f %f %f %f %f %f %f %f", &hres, &vres, &d, &upx, &upy, &upz, &Cx, &Cy, &Cz, &Mx, &My, &Mz);
-                camera = Camera(hres, vres, d, Vector3D(upx, upy, upz), Point3D(Cx, Cy, Cz), Point3D(Mx, My, Mz));
+
+                Vector3D up = Vector3D(upx, upy, upz);
+                Point3D localization = Point3D(Cx, Cy, Cz);
+
+                // RotationD
+                // Matrix4X4 rotate;
+                // rotate.toRotationMatrix(30, 'Y');
+                // localization = pointMatrixMultiplication(localization.x, localization.y, localization.z, rotate);
+                // up = vectorMatrixMultiplication(up.x, up.y, up.z, rotate);
+
+                camera = Camera(hres, vres, d, up, localization, Point3D(Mx, My, Mz));
             }
             //Verifica se a linha é uma luz e adiciona a lista de luzes
             if (linha[0] == 'l') {
