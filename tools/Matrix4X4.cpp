@@ -13,18 +13,19 @@ void Matrix4X4::toRotationMatrix(double angle, char axis) {
 
     double radian = angle*M_PI/180.0;
 
-    switch(int(axis)) {
-    case 88: // valor ASCII do char 'X'
+    if(axis == 'X') {
         matrix[1][1] = (float) std::cos(radian);
         matrix[1][2] = (float) (-std::sin(radian));
         matrix[2][1] = (float) std::sin(radian);
         matrix[2][2] = (float) std::cos(radian);
-    case 89: // valor ASCII do char 'Y'
+
+    } else if(axis == 'Y'){
         matrix[0][0] = (float) std::cos(radian);
         matrix[0][2] = (float) std::sin(radian);
         matrix[2][0] = (float) (-std::sin(radian));
         matrix[2][2] = (float) std::cos(radian);
-    case 90: // valor ASCII do char 'Z'
+
+    } else if(axis == 'Z'){
         matrix[0][0] = (float) std::cos(radian);
         matrix[0][1] = (float) (-std::sin(radian));
         matrix[1][0] = (float) std::sin(radian);
@@ -37,18 +38,19 @@ void Matrix4X4::toClockwiseRotationMatrix(double angle, char axis) {
 
     double radian = angle*M_PI/180.0;
 
-    switch(int(axis)) {
-    case 88: // valor ASCII do char 'X'
+    if(axis == 'X') {
         matrix[1][1] = (float) std::cos(radian);
         matrix[1][2] = (float) std::sin(radian);
         matrix[2][1] = (float) (-std::sin(radian));
         matrix[2][2] = (float) std::cos(radian);
-    case 89: // valor ASCII do char 'Y'
+
+    } else if(axis == 'Y'){
         matrix[0][0] = (float) std::cos(radian);
         matrix[0][2] = (float) (-std::sin(radian));
         matrix[2][0] = (float) std::sin(radian);
         matrix[2][2] = (float) std::cos(radian);
-    case 90: // valor ASCII do char 'Z'
+
+    } else if(axis == 'Z'){
         matrix[0][0] = (float) std::cos(radian);
         matrix[0][1] = (float) std::sin(radian);
         matrix[1][0] = (float) (-std::sin(radian));
