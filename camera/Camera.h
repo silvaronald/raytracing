@@ -23,6 +23,11 @@ public:
     Vector3D vectorY = Vector3D(0,0,0);
 
     Camera (int screenWidth, int screenHeight, float distanceToScreen, Vector3D vectorUp, Point3D localization, Point3D target);
+
+    void updateCamera();
+
+    void translade(float x, float y, float z);
+    void rotate(double angle, char axis);
 };
 
 #endif /* CAMERA_H */

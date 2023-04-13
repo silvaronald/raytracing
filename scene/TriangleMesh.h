@@ -16,6 +16,7 @@ public:
     int numTriangles;
     int numVertices;
     vector<Point3D> vertices;
+    vector<int[3]> trianglesIdxs;
     vector<Triangle> triangles;
     vector<Vector3D> triangleNormals;
     vector<Vector3D> vertexNormals;
@@ -32,9 +33,7 @@ public:
         int numTriangles, 
         int numVertices, 
         vector<Point3D> vertices,
-        vector<Triangle> triangles,
-        vector<Vector3D> triangleNormals,
-        vector<Vector3D> vertexNormals, 
+        vector<int[3]> trianglesIdxs, 
         Color color,
         float diffuseCoefficient, 
         float specularCoefficient,
@@ -43,6 +42,9 @@ public:
         float transmissionCoefficient,
         float rugosityCoefficient);
     
+    void updateMesh();
+    vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices);
+
     std::optional<std::pair<Triangle, Point3D>> intercept(Point3D point, Vector3D vector);
 
     void translade(float x, float y, float z);
@@ -50,5 +52,7 @@ public:
 
     Point3D getMeshCenter();
 };
+
+
 
 #endif /* TRIANGLEMESH_H */
