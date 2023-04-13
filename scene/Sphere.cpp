@@ -1,8 +1,5 @@
 #include "Sphere.h"
 
-#include "../tools/Matrix4X4.h"
-#include "../tools/MatrixOperations.h"
-
 #include <algorithm>
 #include <cmath>
 #include "iostream"
@@ -24,6 +21,7 @@ Sphere::Sphere(Point3D center,
     this->center = center;
     this->radius = radius;
     this->color = color;
+    this->color.normalize();
 
     this->diffuseCoefficient = diffuseCoefficient;
     this->specularCoefficient = specularCoefficient;
@@ -31,14 +29,6 @@ Sphere::Sphere(Point3D center,
     this->reflectionCoefficient = reflectionCoefficient;
     this->transmissionCoefficient = transmissionCoefficient;
     this->rugosityCoefficient = rugosityCoefficient;
-}
-
-void Sphere::translade(float x, float y, float z) {
-
-    Matrix4X4 translationMatrix;
-    translationMatrix.toTranslationMatrix(x,y,z);
-
-    this->center = pointMatrixMultiplication(this->center.x,this->center.y, this->center.z, translationMatrix);
 }
 
 std::optional<std::pair<Sphere, Point3D>> Sphere::intercept(Point3D point, Vector3D vector) {

@@ -4,7 +4,6 @@
 #include "../tools/Point3D.h"
 #include "../tools/Color.h"
 
-
 #include <optional>
 #include <utility>
 
@@ -31,8 +30,6 @@ public:
         float reflectionCoefficient,
         float transmissionCoefficient,
         float rugosityCoefficient);
-
-    void translade(float x, float y, float z);
 
     std::optional<std::pair<Sphere, Point3D>> intercept (Point3D point, Vector3D vector);
 };

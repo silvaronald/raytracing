@@ -8,6 +8,8 @@
 #include "scene/TriangleMesh.h"
 #include "scene/Triangle.h"
 #include "scene/Scene.h"
+#include "tools/Matrix4X4.h"
+#include "tools/MatrixOperations.h"
 
 #include <cstddef>
 #include <utility>
@@ -22,14 +24,7 @@ vector<Plane> planes;
 vector<Light> lights;
 vector<TriangleMesh> trianglesMesh;
 Color ambientColor;
-
-int screenWidth;
-int screenHeight;
-float distanceToScreen;
-Vector3D vectorUp;
-Point3D localization;
-Point3D target;
-
+Camera camera;
 
 void readFile();
 vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices);
@@ -40,9 +35,14 @@ int main() {
 
     //Cria a cena com os objetos lidos do arquivo
     Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
-    Camera camera = Camera(screenWidth, screenHeight, distanceToScreen, vectorUp, localization, target);
 
-    cout << "Scene created" << endl;
+    // Translação
+    // Matrix4X4 translade;
+    // translade.toTranslationMatrix(-100, -100, -100);
+
+    // scene.spheres[0].center = pointMatrixMultiplication(scene.spheres[0].center.x, scene.spheres[0].center.y, scene.spheres[0].center.z, translade);
+    
+    // cout << "Scene created" << endl;
 
     // Raycasting
     ofstream outfile("output.ppm", ios::out | ios::binary);
@@ -170,42 +170,47 @@ void readFile() {
                 int nt, nv;
                 sscanf(linha.c_str(), "t %d %d", &nt, &nv);
                 vector<Point3D> vertices;
-                vector<vector<int>> trianglesIdxs;
+                vector<Triangle> triangles;
                 //Lê os vértices
                 for (int i = 0; i < nv; i++) {
                     std::getline(arquivo, linha);
-                    int v1, v2, v3;
-                    sscanf(linha.c_str(), "%d %d %d", &v1, &v2, &v3);
+                    float v1, v2, v3;
+                    sscanf(linha.c_str(), "%f %f %f", &v1, &v2, &v3);
                     vertices.push_back(Point3D(v1, v2, v3));
                     
                 }
-                //Lê os indices dos triangulos
+                //Lê os triangulos
                 for (int i = 0; i < nt; i++) {
-                    
                     std::getline(arquivo, linha);
                     int x, y, z;
                     sscanf(linha.c_str(), "%d %d %d", &x, &y, &z);
-                    vector <int> triangleIdx = {x, y, z};
-                    trianglesIdxs.push_back(triangleIdx);
+
+                    triangles.push_back(Triangle(vertices[x - 1], vertices[y - 1], vertices[z - 1]));
                 }
                 //Lê as propriedades do material
+                std::getline(arquivo, linha);
                 sscanf(linha.c_str(), "%f %f %f %f %f %f %f %f %f", &Or, &Og, &Ob, &Kd, &Ks, &Ka, &Kr, &Kt, &P);
-                
+                //Calcula as normais dos triangulos e dos vertices
+                vector<Vector3D> vertexNormals, triangleNormals = getNormals(triangles, vertices);
                 //Adiciona a malha de triangulos a lista de malhas de triangulos
-                trianglesMesh.push_back(TriangleMesh(nt, nv, vertices, trianglesIdxs, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
-
+                trianglesMesh.push_back(TriangleMesh(nt, nv, vertices, triangles, triangleNormals, vertexNormals, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
             }
             //Verifica se a linha é uma camera e cria a camera
             if (linha[0] == 'c') {
                 int hres, vres;
                 float d, upx, upy, upz, Cx, Cy, Cz, Mx, My, Mz;
                 sscanf(linha.c_str(), "c %d %d %f %f %f %f %f %f %f %f %f %f", &hres, &vres, &d, &upx, &upy, &upz, &Cx, &Cy, &Cz, &Mx, &My, &Mz);
-                screenHeight = vres;
-                screenWidth = hres;
-                distanceToScreen = d;
-                vectorUp = Vector3D(upx, upy, upz);
-                localization = Point3D(Cx, Cy, Cz);
-                target = Point3D(Mx, My, Mz);
+
+                Vector3D up = Vector3D(upx, upy, upz);
+                Point3D localization = Point3D(Cx, Cy, Cz);
+
+                // RotationD
+                // Matrix4X4 rotate;
+                // rotate.toRotationMatrix(30, 'Y');
+                // localization = pointMatrixMultiplication(localization.x, localization.y, localization.z, rotate);
+                // up = vectorMatrixMultiplication(up.x, up.y, up.z, rotate);
+
+                camera = Camera(hres, vres, d, up, localization, Point3D(Mx, My, Mz));
             }
             //Verifica se a linha é uma luz e adiciona a lista de luzes
             if (linha[0] == 'l') {
@@ -230,3 +235,34 @@ void readFile() {
 
 }
 
+vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices) {
+    vector<Vector3D> triangleNormals, vertexNormals;
+    //Cria um array de normais de triangulos
+    for (int i = 0; i < triangles.size(); i++) {
+        Vector3D v1 = triangles[i].p1.getVectorToPoint(triangles[i].p2);
+        Vector3D v2 = triangles[i].p1.getVectorToPoint(triangles[i].p3);
+        Vector3D normal = v1.crossProduct(v2);
+        normal.normalize();
+        triangleNormals.push_back(normal);
+    }
+    for (int i = 0; i < vertices.size(); i++) {
+        //Cria um array de normais de vertices onde cada normal é a média das normais dos triangulos que o contem
+        Vector3D normal = Vector3D(0, 0, 0);
+        int count = 0;
+        for (int j = 0; j < triangles.size(); j++) {
+            if (triangles[j].p1.x == vertices[i].x && triangles[j].p1.y == vertices[i].y && triangles[j].p1.z == vertices[i].z
+                || triangles[j].p2.x == vertices[i].x && triangles[j].p2.y == vertices[i].y && triangles[j].p2.z == vertices[i].z
+                || triangles[j].p3.x == vertices[i].x && triangles[j].p3.y == vertices[i].y && triangles[j].p3.z == vertices[i].z) 
+                {
+                normal.x += triangleNormals[j].x;
+                normal.y += triangleNormals[j].y;
+                normal.z += triangleNormals[j].z;
+                count++;
+            }
+        }
+        normal.multiply(1.0 / count);
+        normal.normalize();
+        vertexNormals.push_back(normal);
+    }
+    return vertexNormals, triangleNormals;
+}

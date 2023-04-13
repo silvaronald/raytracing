@@ -4,7 +4,6 @@
 #include "../tools/Color.h"
 #include "../tools/Point3D.h"
 #include "../tools/Vector3D.h"
-
 #include <utility>
 #include <optional>
 
@@ -32,12 +31,7 @@ public:
         float transmissionCoefficient,
         float rugosityCoefficient);
 
-
-    void translade(float x, float y, float z);
-    void rotate(double angle, char axis);
-
     std::optional<std::pair<Plane, Point3D>> intercept(Point3D point, Vector3D vector);
 };
 
 #endif /* PLANE_H */
-    

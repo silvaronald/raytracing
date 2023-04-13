@@ -3,11 +3,13 @@
 
 #include "../tools/Point3D.h"
 #include "../tools/Color.h"
-#include "../tools/Matrix4X4.h"
-#include "../tools/MatrixOperations.h"
 #include "Triangle.h"
+
 #include <vector>
 #include <optional>
+#include <cstddef>
+#include <limits>
+#include <tuple>
 
 using namespace std;
 
@@ -16,7 +18,6 @@ public:
     int numTriangles;
     int numVertices;
     vector<Point3D> vertices;
-    vector<vector<int>> trianglesIdxs;
     vector<Triangle> triangles;
     vector<Vector3D> triangleNormals;
     vector<Vector3D> vertexNormals;
@@ -29,13 +30,14 @@ public:
     float transmissionCoefficient;
     float rugosityCoefficient;
 
-
     TriangleMesh();
     TriangleMesh(
         int numTriangles, 
         int numVertices, 
         vector<Point3D> vertices,
-        vector<vector<int>> trianglesIdxs, 
+        vector<Triangle> triangles,
+        vector<Vector3D> triangleNormals,
+        vector<Vector3D> vertexNormals, 
         Color color,
         float diffuseCoefficient, 
         float specularCoefficient,
@@ -44,17 +46,7 @@ public:
         float transmissionCoefficient,
         float rugosityCoefficient);
     
-    void updateMesh();
-    std::optional<std::pair<vector<Vector3D>, vector<Vector3D>>> getNormals(vector<Triangle> triangles, vector<Point3D> vertices);
-
-    std::optional<std::pair<Triangle, Point3D>> intercept(Point3D point, Vector3D vector);
-
-    void translade(float x, float y, float z);
-    void rotate(double angle, char axis);
-
-    Point3D getMeshCenter();
+    std::optional<std::tuple<Triangle, Point3D, TriangleMesh>> intercept(Point3D point, Vector3D vector);
 };
-
-
 
 #endif /* TRIANGLEMESH_H */
