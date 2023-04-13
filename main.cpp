@@ -8,6 +8,8 @@
 #include "scene/TriangleMesh.h"
 #include "scene/Triangle.h"
 #include "scene/Scene.h"
+#include "tools/Matrix4X4.h"
+#include "tools/MatrixOperations.h"
 
 #include <cstddef>
 #include <utility>
@@ -34,6 +36,12 @@ int main() {
     //Cria a cena com os objetos lidos do arquivo
     Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
 
+    // Translação
+    // Matrix4X4 translade;
+    // translade.toTranslationMatrix(-200, -200, -200);
+
+    // scene.spheres[0].center = pointMatrixMultiplication(scene.spheres[0].center.x, scene.spheres[0].center.y, scene.spheres[0].center.z, translade);
+    
     cout << "Scene created" << endl;
 
     // Raycasting
