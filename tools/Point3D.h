@@ -3,6 +3,8 @@
 
 #include "Vector3D.h"
 
+#include <iostream>
+
 class Point3D {
 public:
     float x;
@@ -15,6 +17,7 @@ public:
     Point3D sumVectorToPoint (Vector3D vector);
     Vector3D getVectorToPoint (Point3D point2);
     float distanceToPoint (Point3D point2);
+    void print();
 };
 
 #endif /* POINT3D_H */

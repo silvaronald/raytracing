@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include "iostream"
 #include <optional>
 #include <utility>
 
@@ -43,7 +42,6 @@ std::optional<std::pair<Sphere, Point3D>> Sphere::intercept(Point3D point, Vecto
     float c = centerToPoint.dotProduct(centerToPoint) - pow(radius, 2);
 
     float delta = pow(b, 2) - (4 * a * c);
-
     if (delta < 0) {
         return std::nullopt;
     }

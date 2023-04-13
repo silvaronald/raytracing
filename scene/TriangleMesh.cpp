@@ -2,13 +2,11 @@
 #include "../tools/Point3D.h"
 #include "../tools/Vector3D.h"
 #include "../tools/Color.h"
-#include <cstddef>
-#include <vector>
-#include <limits>
-#include <optional>
+#include <tuple>
 
 using namespace std;
 
+TriangleMesh::TriangleMesh () {};
 TriangleMesh::TriangleMesh(
         int numTriangles, 
         int numVertices, 
@@ -38,10 +36,10 @@ TriangleMesh::TriangleMesh(
     this->rugosityCoefficient = rugosityCoefficient;
 }
 
-std::optional<std::pair<Triangle, Point3D>> TriangleMesh::intercept(Point3D point, Vector3D vector) {
+std::optional<std::tuple<Triangle, Point3D, TriangleMesh>> TriangleMesh::intercept(Point3D point, Vector3D vector) {
     float t_min = std::numeric_limits<float>::max(); // minimum distance to intersection
 
-    std::optional<std::pair<Triangle, Point3D>> pair;
+    std::optional<std::tuple<Triangle, Point3D, TriangleMesh>> result = std::nullopt;
 
     // Iterate over all triangles in the mesh
     for (int i = 0; i < numTriangles; i++) {
@@ -66,9 +64,12 @@ std::optional<std::pair<Triangle, Point3D>> TriangleMesh::intercept(Point3D poin
         if (t < t_min) {
             t_min = t;
 
-            pair = std::make_pair(triangle, plane_intersect);
+            // Create the tuple with the triangle, intersection point, and mesh
+            std::tuple<Triangle, Point3D, TriangleMesh> tuple(triangle, plane_intersect, *this);
+
+            result = tuple;
         }
     }
 
-    return pair;
+    return result;
 }

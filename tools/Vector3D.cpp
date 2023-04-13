@@ -23,6 +23,7 @@ void Vector3D::multiply(float factor) {
     this->x = this->x * factor;
     this->y = this->y * factor;
     this->z = this->z * factor;
+    
 }
 
 Vector3D Vector3D::crossProduct(Vector3D vector2) {
@@ -56,4 +57,8 @@ Vector3D Vector3D::projectOnto(Vector3D vector2) {
     projection.multiply(this->dotProduct(vector2) / vector2.getNorm());
 
     return projection;
+}
+
+void Vector3D::print() {
+    std::cout << "X: " << this->x << " / Y: " << this->y << " / Z: " << this->z << "\n";
 }
