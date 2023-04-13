@@ -162,7 +162,7 @@ void readFile() {
                 int nt, nv;
                 sscanf(linha.c_str(), "t %d %d", &nt, &nv);
                 vector<Point3D> vertices;
-                vector<Triangle> triangles;
+                vector<vector<int>> trianglesIdxs;
                 //Lê os vértices
                 for (int i = 0; i < nv; i++) {
                     std::getline(arquivo, linha);
@@ -171,19 +171,20 @@ void readFile() {
                     vertices.push_back(Point3D(v1, v2, v3));
                     
                 }
-                //Lê os triangulos
+                //Lê os indices dos triangulos
                 for (int i = 0; i < nt; i++) {
+                    
                     std::getline(arquivo, linha);
-                    float x, y, z;
-                    sscanf(linha.c_str(), "%f %f %f", &x, &y, &z);
-                    triangles.push_back(Triangle(vertices[x], vertices[y], vertices[z]));
+                    int x, y, z;
+                    sscanf(linha.c_str(), "%d %d %d", &x, &y, &z);
+                    vector <int> triangleIdx = {x, y, z};
+                    trianglesIdxs.push_back(triangleIdx);
                 }
                 //Lê as propriedades do material
                 sscanf(linha.c_str(), "%f %f %f %f %f %f %f %f %f", &Or, &Og, &Ob, &Kd, &Ks, &Ka, &Kr, &Kt, &P);
-                //Calcula as normais dos triangulos e dos vertices
-                vector<Vector3D> vertexNormals, triangleNormals = getNormals(triangles, vertices);
+                
                 //Adiciona a malha de triangulos a lista de malhas de triangulos
-                trianglesMesh.push_back(TriangleMesh(nt, nv, vertices, triangles, triangleNormals, vertexNormals, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
+                trianglesMesh.push_back(TriangleMesh(nt, nv, vertices, trianglesIdxs, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
 
             }
             //Verifica se a linha é uma camera e cria a camera
@@ -216,34 +217,3 @@ void readFile() {
 
 }
 
-vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices) {
-    vector<Vector3D> triangleNormals, vertexNormals;
-    //Cria um array de normais de triangulos
-    for (int i = 0; i < triangles.size(); i++) {
-        Vector3D v1 = triangles[i].p1.getVectorToPoint(triangles[i].p2);
-        Vector3D v2 = triangles[i].p1.getVectorToPoint(triangles[i].p3);
-        Vector3D normal = v1.crossProduct(v2);
-        normal.normalize();
-        triangleNormals.push_back(normal);
-    }
-    for (int i = 0; i < vertices.size(); i++) {
-        //Cria um array de normais de vertices onde cada normal é a média das normais dos triangulos que o contem
-        Vector3D normal = Vector3D(0, 0, 0);
-        int count = 0;
-        for (int j = 0; j < triangles.size(); j++) {
-            if (triangles[j].p1.x == vertices[i].x && triangles[j].p1.y == vertices[i].y && triangles[j].p1.z == vertices[i].z
-                || triangles[j].p2.x == vertices[i].x && triangles[j].p2.y == vertices[i].y && triangles[j].p2.z == vertices[i].z
-                || triangles[j].p3.x == vertices[i].x && triangles[j].p3.y == vertices[i].y && triangles[j].p3.z == vertices[i].z) 
-                {
-                normal.x += triangleNormals[j].x;
-                normal.y += triangleNormals[j].y;
-                normal.z += triangleNormals[j].z;
-                count++;
-            }
-        }
-        normal.multiply(1.0 / count);
-        normal.normalize();
-        vertexNormals.push_back(normal);
-    }
-    return vertexNormals, triangleNormals;
-}
