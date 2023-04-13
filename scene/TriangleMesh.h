@@ -43,7 +43,7 @@ public:
         float rugosityCoefficient);
     
     void updateMesh();
-    std::optional<std::pair<vector<Vector3D>, vector<Vector3D>>> getNormals(vector<Triangle> triangles, vector<Point3D> vertices);
+    vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices);
 
     std::optional<std::pair<Triangle, Point3D>> intercept(Point3D point, Vector3D vector);
 

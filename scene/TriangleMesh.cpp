@@ -49,14 +49,10 @@ void TriangleMesh::updateMesh() {
 
     this->triangles = triangles;
 
-    std::optional<std::pair<vector<Vector3D>, vector<Vector3D>>> normals = this->getNormals(this->triangles, this->vertices);
-
-    this->vertexNormals = normals.value().first;
-    this->triangleNormals = normals.value().second;
+    this->vertexNormals, this->triangleNormals = this->getNormals(this->triangles, this->vertices);
 }
 
-std::optional<std::pair<vector<Vector3D>, vector<Vector3D>>> TriangleMesh::getNormals(vector<Triangle> triangles, vector<Point3D> vertices) {
-    std::optional<std::pair<vector<Vector3D>, vector<Vector3D>>> pair;
+vector<Vector3D> TriangleMesh::getNormals(vector<Triangle> triangles, vector<Point3D> vertices) {
     vector<Vector3D> triangleNormals, vertexNormals;
     //Cria um array de normais de triangulos
     for (int i = 0; i < triangles.size(); i++) {
@@ -85,9 +81,7 @@ std::optional<std::pair<vector<Vector3D>, vector<Vector3D>>> TriangleMesh::getNo
         normal.normalize();
         vertexNormals.push_back(normal);
     }
-
-    pair = std::make_pair(vertexNormals, triangleNormals);
-    return pair;
+    return vertexNormals, triangleNormals;
 }
 
 std::optional<std::pair<Triangle, Point3D>> TriangleMesh::intercept(Point3D point, Vector3D vector) {
