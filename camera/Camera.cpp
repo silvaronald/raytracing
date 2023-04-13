@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+Camera::Camera() {};
+
 Camera::Camera (int screenWidth, int screenHeight, float distanceToScreen, Vector3D vectorUp, Point3D localization, Point3D target) {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
