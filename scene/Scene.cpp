@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "Triangle.h"
 #include "TriangleMesh.h"
+
 #include <algorithm>
 #include <math.h>
 #include <iostream>

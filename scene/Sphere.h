@@ -6,7 +6,6 @@
 
 #include <optional>
 #include <utility>
-#include <iostream>
 
 class Sphere {
 public:
