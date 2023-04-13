@@ -22,6 +22,7 @@ public:
     Vector3D vectorX = Vector3D(0,0,0);
     Vector3D vectorY = Vector3D(0,0,0);
 
+    Camera ();
     Camera (int screenWidth, int screenHeight, float distanceToScreen, Vector3D vectorUp, Point3D localization, Point3D target);
 
     void updateCamera();

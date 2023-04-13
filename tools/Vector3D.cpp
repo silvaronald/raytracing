@@ -23,6 +23,7 @@ void Vector3D::multiply(float factor) {
     this->x = this->x * factor;
     this->y = this->y * factor;
     this->z = this->z * factor;
+    
 }
 
 Vector3D Vector3D::crossProduct(Vector3D vector2) {
