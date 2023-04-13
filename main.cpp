@@ -37,15 +37,15 @@ int main() {
     Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
 
     // Translação
-    Matrix4X4 translade;
-    translade.toTranslationMatrix(-100, -100, -100);
+    // Matrix4X4 translade;
+    // translade.toTranslationMatrix(-100, -100, -100);
 
-    scene.spheres[0].center = pointMatrixMultiplication(scene.spheres[0].center.x, scene.spheres[0].center.y, scene.spheres[0].center.z, translade);
+    // scene.spheres[0].center = pointMatrixMultiplication(scene.spheres[0].center.x, scene.spheres[0].center.y, scene.spheres[0].center.z, translade);
     
-    cout << "Scene created" << endl;
+    // cout << "Scene created" << endl;
 
     // Raycasting
-    ofstream outfile("output1.ppm", ios::out | ios::binary);
+    ofstream outfile("output.ppm", ios::out | ios::binary);
 
     int max_value = 255;
 
