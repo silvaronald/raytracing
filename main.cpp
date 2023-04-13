@@ -16,19 +16,21 @@
 #include <cmath>
 
 int main () {
-    vector<Sphere> spheres;
-    spheres.push_back(Sphere(Point3D(0, 0, 10), 2, Color(200, 200, 200), 0, 0, 0, 0, 0, 0));
+    vector<Point3D> vertices;
+    vector<vector<int>> triangleIdxs;
 
-    vector<Plane> planes;
-    planes.push_back(Plane(Point3D(0, 0, 20), Vector3D(0, 0, -1), Color(100, 100, 100), 0, 0, 0, 0, 0, 0));
+    vertices.push_back(Point3D(1,1,1));
+    vertices.push_back(Point3D(1,1,0));
+    vertices.push_back(Point3D(1,0,0));
+    vertices.push_back(Point3D(1,0,1));
+    vertices.push_back(Point3D(0,0,1));
+    vertices.push_back(Point3D(0,0,0));
+    vertices.push_back(Point3D(0,1,0));
+    vertices.push_back(Point3D(0,1,1));
 
-    vector<Light> lights;
+    triangleIdxs = {{0,3,1}, {1,3,2}, {2,3,5}, {3,4,5}, {4,7,5}, {5,7,6}};
 
-    vector<TriangleMesh> triangles;
+    TriangleMesh malha = TriangleMesh(6, 8, vertices, triangleIdxs, Color(255, 0, 0), 1, 1, 1, 0, 0, 5);
 
-    Scene scene = Scene(Color(1, 1, 1), spheres, planes, triangles, lights);
-
-    Color color1 = scene.intercept(Point3D(0, 0, 0), Vector3D(0, 0, 11.9));
-
-    std::cout << color1.red << " " << color1.green << " " << color1.blue << "\n";
+    malha.rotate(30.0, 'X');
 }
