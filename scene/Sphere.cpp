@@ -21,6 +21,7 @@ Sphere::Sphere(Point3D center,
     this->center = center;
     this->radius = radius;
     this->color = color;
+    this->color.normalize();
 
     this->diffuseCoefficient = diffuseCoefficient;
     this->specularCoefficient = specularCoefficient;

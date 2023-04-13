@@ -3,6 +3,7 @@
 #include "../tools/Vector3D.h"
 #include "../tools/Color.h"
 #include <tuple>
+#include <iostream>
 
 using namespace std;
 
@@ -28,6 +29,7 @@ TriangleMesh::TriangleMesh(
     this->triangleNormals = triangleNormals;
     this->vertexNormals = vertexNormals;
     this->color = color;
+    this->color.normalize();
     this->diffuseCoefficient = diffuseCoefficient;
     this->specularCoefficient = specularCoefficient;
     this->ambientCoefficient = ambientCoefficient;

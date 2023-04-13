@@ -48,5 +48,5 @@ bool Triangle::isInsideTriangle(Point3D point) {
     alpha = 1.0f - beta - gamma;
     
     // Verificação se a soma das coordenadas baricêntricas é igual a 1
-    return ((alpha + beta + gamma) == 1);
+    return (alpha >= 0 && beta >= 0 && gamma >= 0 && (alpha + beta + gamma) == 1);
 }

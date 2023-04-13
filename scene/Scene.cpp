@@ -9,6 +9,7 @@
 
 Scene::Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> planes, std::vector<TriangleMesh> triangles, std::vector<Light> lights) {
     this->ambientColor = color;
+    this->ambientColor.normalize();
     this->spheres = spheres;
     this->planes = planes;
     this->triangles = triangles;
@@ -88,6 +89,7 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
 
     if (interceptedObject == "") {
         // No interception
+        color.denormalize();
         return color;
     }
 

@@ -166,25 +166,26 @@ void readFile() {
                 //Lê os vértices
                 for (int i = 0; i < nv; i++) {
                     std::getline(arquivo, linha);
-                    int v1, v2, v3;
-                    sscanf(linha.c_str(), "%d %d %d", &v1, &v2, &v3);
+                    float v1, v2, v3;
+                    sscanf(linha.c_str(), "%f %f %f", &v1, &v2, &v3);
                     vertices.push_back(Point3D(v1, v2, v3));
                     
                 }
                 //Lê os triangulos
                 for (int i = 0; i < nt; i++) {
                     std::getline(arquivo, linha);
-                    float x, y, z;
-                    sscanf(linha.c_str(), "%f %f %f", &x, &y, &z);
-                    triangles.push_back(Triangle(vertices[x], vertices[y], vertices[z]));
+                    int x, y, z;
+                    sscanf(linha.c_str(), "%d %d %d", &x, &y, &z);
+
+                    triangles.push_back(Triangle(vertices[x - 1], vertices[y - 1], vertices[z - 1]));
                 }
                 //Lê as propriedades do material
+                std::getline(arquivo, linha);
                 sscanf(linha.c_str(), "%f %f %f %f %f %f %f %f %f", &Or, &Og, &Ob, &Kd, &Ks, &Ka, &Kr, &Kt, &P);
                 //Calcula as normais dos triangulos e dos vertices
                 vector<Vector3D> vertexNormals, triangleNormals = getNormals(triangles, vertices);
                 //Adiciona a malha de triangulos a lista de malhas de triangulos
                 trianglesMesh.push_back(TriangleMesh(nt, nv, vertices, triangles, triangleNormals, vertexNormals, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
-
             }
             //Verifica se a linha é uma camera e cria a camera
             if (linha[0] == 'c') {
