@@ -81,7 +81,7 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
 
                 interceptedTriangle = std::get<0>(result.value());
                 interceptedPoint = std::get<1>(result.value());
-                interceptedTriangleMesh = std::get<2>(result.value());
+                interceptedTriangleMesh = triangleMesh;
             }
         }
     }

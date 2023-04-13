@@ -22,7 +22,14 @@ vector<Plane> planes;
 vector<Light> lights;
 vector<TriangleMesh> trianglesMesh;
 Color ambientColor;
-Camera camera;
+
+int screenWidth;
+int screenHeight;
+float distanceToScreen;
+Vector3D vectorUp;
+Point3D localization;
+Point3D target;
+
 
 void readFile();
 vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices);
@@ -33,6 +40,7 @@ int main() {
 
     //Cria a cena com os objetos lidos do arquivo
     Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
+    Camera camera = Camera(screenWidth, screenHeight, distanceToScreen, vectorUp, localization, target);
 
     cout << "Scene created" << endl;
 
@@ -192,7 +200,12 @@ void readFile() {
                 int hres, vres;
                 float d, upx, upy, upz, Cx, Cy, Cz, Mx, My, Mz;
                 sscanf(linha.c_str(), "c %d %d %f %f %f %f %f %f %f %f %f %f", &hres, &vres, &d, &upx, &upy, &upz, &Cx, &Cy, &Cz, &Mx, &My, &Mz);
-                camera = Camera(hres, vres, d, Vector3D(upx, upy, upz), Point3D(Cx, Cy, Cz), Point3D(Mx, My, Mz));
+                screenHeight = vres;
+                screenWidth = hres;
+                distanceToScreen = d;
+                vectorUp = Vector3D(upx, upy, upz);
+                localization = Point3D(Cx, Cy, Cz);
+                target = Point3D(Mx, My, Mz);
             }
             //Verifica se a linha é uma luz e adiciona a lista de luzes
             if (linha[0] == 'l') {

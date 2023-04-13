@@ -29,6 +29,8 @@ public:
     float transmissionCoefficient;
     float rugosityCoefficient;
 
+
+    TriangleMesh();
     TriangleMesh(
         int numTriangles, 
         int numVertices, 
