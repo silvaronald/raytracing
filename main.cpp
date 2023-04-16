@@ -30,19 +30,13 @@ void readFile();
 vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices);
 
 int main() {
-    //Lê o arquivo
+    // Read scene input
     readFile();
 
-    //Cria a cena com os objetos lidos do arquivo
+    // Create scene object
     Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
 
-    // Translação
-    // Matrix4X4 translade;
-    // translade.toTranslationMatrix(-100, -100, -100);
-
-    // scene.spheres[0].center = pointMatrixMultiplication(scene.spheres[0].center.x, scene.spheres[0].center.y, scene.spheres[0].center.z, translade);
-    
-    // cout << "Scene created" << endl;
+    cout << "Scene created!" << endl;
 
     // Raycasting
     ofstream outfile("output.ppm", ios::out | ios::binary);
@@ -51,89 +45,36 @@ int main() {
 
     outfile << "P6\n" << camera.screenWidth << " " << camera.screenHeight << "\n" << max_value << "\n";
 
-    // Iterate through screen
-    // Height is even
-    if (camera.screenHeight % 2 == 0) {
-        for (float i = (camera.screenHeight / 2.0) - 1 + 0.5; i > -(camera.screenHeight / 2.0); i--) {
-            Vector3D verticalVector = camera.vectorY;
-            verticalVector.multiply(i);
+    // Iterate through screen pixels
+    int screenWidth = camera.screenWidth;
+    int screenHeight = camera.screenHeight;
+    float halfScreenWidth = screenWidth / 2.0f;
+    float halfScreenHeight = screenHeight / 2.0f;
+    float rowStart = (screenHeight % 2 == 0 ? halfScreenHeight - 0.5f : std::ceil(halfScreenHeight));
 
-            // Width is even
-            if (camera.screenWidth % 2 == 0) {
-                for (float j = -(camera.screenWidth / 2.0) + 0.5; j < camera.screenWidth / 2.0; j++) {
-                    Vector3D horizontalVector = camera.vectorX;
-                    horizontalVector.multiply(j);
+    #pragma omp parallel for schedule(dynamic) // Use parallelism (nem sei se funciona)
 
-                    Point3D screenPoint = camera.target.sumVectorToPoint(verticalVector);
+    for (int i = 0; i < screenHeight; i++) {
+        float y = rowStart - i;
 
-                    screenPoint = screenPoint.sumVectorToPoint(horizontalVector);
-                    
-                    Vector3D cameraToScreen = camera.localization.getVectorToPoint(screenPoint);
+        Vector3D verticalVector = camera.vectorY;
+        verticalVector.multiply(y);
 
-                    Color color = scene.intercept(camera.localization, cameraToScreen);
+        Point3D screenPoint = camera.target.sumVectorToPoint(verticalVector);
 
-                    outfile << (char)color.red << (char)color.green << (char)color.blue;
-                }
-            }
-            // Width is odd
-            else {
-                for (float j = ceil(-(camera.screenWidth / 2.0)); j < camera.screenWidth / 2.0; j++) {
-                    Vector3D horizontalVector = camera.vectorX;
-                    horizontalVector.multiply(j);
+        for (int j = 0; j < screenWidth; j++) {
+            float x = -(screenWidth % 2 == 0 ? halfScreenWidth - 0.5f : std::ceil(halfScreenWidth)) + j;
 
-                    Point3D screenPoint = camera.target.sumVectorToPoint(verticalVector);
+            Vector3D horizontalVector = camera.vectorX;
+            horizontalVector.multiply(x);
 
-                    screenPoint = screenPoint.sumVectorToPoint(horizontalVector);
-                    
-                    Vector3D cameraToScreen = camera.localization.getVectorToPoint(screenPoint);
+            Point3D pixelPoint = screenPoint.sumVectorToPoint(horizontalVector);
 
-                    Color color = scene.intercept(camera.localization, cameraToScreen);
+            Vector3D cameraToPixel = camera.localization.getVectorToPoint(pixelPoint);
+            
+            Color color = scene.intercept(camera.localization, cameraToPixel);
 
-                    outfile << (char)color.red << (char)color.green << (char)color.blue;
-                }
-            }
-        }
-    }
-    // Height is odd
-    else {
-        for (float i = std::ceil(camera.screenHeight / 2.0); i > -camera.screenHeight / 2.0; i--) {
-            Vector3D verticalVector = camera.vectorY;
-            verticalVector.multiply(i);
-
-            // Width is even
-            if (camera.screenWidth % 2 == 0) {
-                for (float j = -(camera.screenWidth / 2.0) + 0.5; j < camera.screenWidth / 2.0; j++) {
-                    Vector3D horizontalVector = camera.vectorX;
-                    horizontalVector.multiply(j);
-
-                    Point3D screenPoint = camera.target.sumVectorToPoint(verticalVector);
-
-                    screenPoint = screenPoint.sumVectorToPoint(horizontalVector);
-                    
-                    Vector3D cameraToScreen = camera.localization.getVectorToPoint(screenPoint);
-
-                    Color color = scene.intercept(camera.localization, cameraToScreen);
-
-                    outfile << (char)color.red << (char)color.green << (char)color.blue;
-                }
-            }
-            // Width is odd
-            else {
-                for (float j = ceil(-(camera.screenWidth / 2.0)); j < camera.screenWidth / 2.0; j++) {
-                    Vector3D horizontalVector = camera.vectorX;
-                    horizontalVector.multiply(j);
-
-                    Point3D screenPoint = camera.target.sumVectorToPoint(verticalVector);
-
-                    screenPoint = screenPoint.sumVectorToPoint(horizontalVector);
-                    
-                    Vector3D cameraToScreen = camera.localization.getVectorToPoint(screenPoint);
-
-                    Color color = scene.intercept(camera.localization, cameraToScreen);
-
-                    outfile << (char)color.red << (char)color.green << (char)color.blue;
-                }
-            }
+            outfile << static_cast<char>(color.red) << static_cast<char>(color.green) << static_cast<char>(color.blue);
         }
     }
 
@@ -153,18 +94,21 @@ void readFile() {
         while (std::getline(arquivo, linha)) {
             //Cria as váriaveis comuns a todos os objetos
             float Or, Og, Ob, Kd, Ks, Ka, Kr, Kt, P;
+            
             //Verifica se a linha é uma esfera e adiciona a lista de esferas
             if (linha[0] == 's') {
                 float x, y, z, radius;
                 sscanf(linha.c_str(), "s %f %f %f %f %f %f %f %f %f %f %f %f %f", &x, &y, &z, &radius, &Or, &Og, &Ob, &Kd, &Ks, &Ka, &Kr, &Kt, &P);
                 spheres.push_back(Sphere(Point3D(x, y, z), radius, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
             }
+
             //Verifica se a linha é um plano e adiciona a lista de planos
             if (linha[0] == 'p') {
                 float px, py, pz, vx, vy, vz;
                 sscanf(linha.c_str(), "p %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", &px, &py, &pz, &vx, &vy, &vz, &Or, &Og, &Ob, &Kd, &Ks, &Ka, &Kr, &Kt, &P);
                 planes.push_back(Plane(Point3D(px, py, pz), Vector3D(vx, vy, vz), Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
             }
+
             //Verifica se a linha é uma Malha de Triângulos e adiciona a lista de Malhas de Triângulos
             if (linha[0] == 't') {
                 int nt, nv;
@@ -195,6 +139,7 @@ void readFile() {
                 //Adiciona a malha de triangulos a lista de malhas de triangulos
                 trianglesMesh.push_back(TriangleMesh(nt, nv, vertices, triangles, triangleNormals, vertexNormals, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
             }
+
             //Verifica se a linha é uma camera e cria a camera
             if (linha[0] == 'c') {
                 int hres, vres;
@@ -204,20 +149,16 @@ void readFile() {
                 Vector3D up = Vector3D(upx, upy, upz);
                 Point3D localization = Point3D(Cx, Cy, Cz);
 
-                // RotationD
-                // Matrix4X4 rotate;
-                // rotate.toRotationMatrix(30, 'Y');
-                // localization = pointMatrixMultiplication(localization.x, localization.y, localization.z, rotate);
-                // up = vectorMatrixMultiplication(up.x, up.y, up.z, rotate);
-
                 camera = Camera(hres, vres, d, up, localization, Point3D(Mx, My, Mz));
             }
+
             //Verifica se a linha é uma luz e adiciona a lista de luzes
             if (linha[0] == 'l') {
                 float x, y, z, Ilr, Ilg, Ilb;
                 sscanf(linha.c_str(), "l %f %f %f %f %f %f", &x, &y, &z, &Ilr, &Ilg, &Ilb);
                 lights.push_back(Light(Point3D(x, y, z), Color(Ilr, Ilg, Ilb)));
             }
+
             //Verifica se a linha é a cor ambiente e cria a cor ambiente
             if (linha[0] == 'a') {
                 float Ir, Ig, Ib;
@@ -225,10 +166,9 @@ void readFile() {
                 ambientColor = Color(Ir, Ig, Ib);
             }
         }
+
         //Fecha o arquivo
         arquivo.close();
-        
-        
     }
 
     else std::cout << "Unable to open file";
