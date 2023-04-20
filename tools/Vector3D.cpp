@@ -58,3 +58,9 @@ Vector3D Vector3D::projectOnto(Vector3D vector2) {
 
     return projection;
 }
+
+void Vector3D::sumVector(Vector3D vector2) {
+    this->x += vector2.x;
+    this->y += vector2.y;
+    this->z += vector2.z;
+}

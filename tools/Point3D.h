@@ -15,6 +15,7 @@ public:
     Point3D sumVectorToPoint (Vector3D vector);
     Vector3D getVectorToPoint (Point3D point2);
     float distanceToPoint (Point3D point2);
+    void sumPoint (Point3D point2);
 };
 
 #endif /* POINT3D_H */

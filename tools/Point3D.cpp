@@ -32,3 +32,9 @@ Vector3D Point3D::getVectorToPoint(Point3D point2) {
 float Point3D::distanceToPoint(Point3D point2) {
     return sqrt(pow(this->x - point2.x, 2) + pow(this->y - point2.y, 2) + pow(this->z - point2.z, 2));
 }
+
+void Point3D::sumPoint(Point3D point2) {
+    this->x += point2.x;
+    this->y += point2.y;
+    this->z += point2.z;
+}
