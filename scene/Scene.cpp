@@ -1,5 +1,4 @@
 #include "Scene.h"
-#include "Triangle.h"
 #include "TriangleMesh.h"
 
 #include <algorithm>
@@ -24,10 +23,10 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
     float interceptDistance = std::numeric_limits<float>::max();
 
     Point3D interceptedPoint;
-    Triangle interceptedTriangle;
     Sphere interceptedSphere;
     Plane interceptedPlane;
     TriangleMesh interceptedTriangleMesh;
+    Vector3D normalVector;
 
     for (auto sphere: this->spheres) {
         auto pair = sphere.intercept(point, vector);
@@ -81,7 +80,7 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
                 interceptDistance = distance;
                 interceptedObject = "triangle";
 
-                interceptedTriangle = std::get<0>(result.value());
+                normalVector = std::get<0>(result.value());
                 interceptedPoint = std::get<1>(result.value());
                 interceptedTriangleMesh = std::get<2>(result.value());
             }
@@ -108,6 +107,10 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
                         interceptedPoint);
     }
     else if (interceptedObject == "plane") {
+        if (interceptedPlane.normalVector.dotProduct(interceptedPlane.planePoint.getVectorToPoint(point)) < 0) {
+            interceptedPlane.normalVector.multiply(-1);
+        }
+
         color = phong(interceptedPlane.ambientCoefficient,
                         interceptedPlane.color, 
                         interceptedPlane.diffuseCoefficient, 
@@ -118,10 +121,14 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
                         interceptedPoint);
     }
     else if (interceptedObject == "triangle") {
+        if (normalVector.dotProduct(interceptedPoint.getVectorToPoint(point)) < 0) {
+            normalVector.multiply(-1);
+        }
+
         color = phong(interceptedTriangleMesh.ambientCoefficient,
                         interceptedTriangleMesh.color, 
                         interceptedTriangleMesh.diffuseCoefficient, 
-                        interceptedTriangle.normal, 
+                        normalVector, 
                         interceptedTriangleMesh.specularCoefficient, 
                         V, 
                         interceptedTriangleMesh.rugosityCoefficient,
