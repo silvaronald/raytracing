@@ -88,14 +88,14 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
             continue;  // No intersection
         }
 
-        float t = -(triangleNormal.dotProduct(P0.getVectorToPoint(point))) / denom;
+        float t = triangleNormal.dotProduct(P0.getVectorToPoint(point)) / denom;
 
-        if (t <= 1) {
+        if (t > 1) {
             // Point is behind screen
             continue;
         }
 
-        vector.multiply(t);
+        vector.multiply(-t);
 
         Point3D intersectionPoint = point.sumVectorToPoint(vector);
         
