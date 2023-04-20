@@ -22,6 +22,7 @@ TriangleMesh::TriangleMesh(
         float reflectionCoefficient,
         float transmissionCoefficient,
         float rugosityCoefficient) {
+
     this->numTriangles = numTriangles;
     this->numVertices = numVertices;
     this->vertices = vertices;
@@ -48,26 +49,31 @@ std::optional<std::tuple<Triangle, Point3D, TriangleMesh>> TriangleMesh::interce
         Triangle triangle = triangles[i];
         
         // Check if the ray intersects the plane of the triangle
-        Point3D plane_intersect = triangle.interceptToPlane(point, vector);
-        
-        if (!triangle.isInsideTriangle(plane_intersect)) {
-            continue; // skip to next triangle
-        }
-        
-        // Check if the intersection point is in front of the screen
-        if ((plane_intersect.x - point.x) / vector.x <= 1 || (plane_intersect.y - point.y) / vector.y <= 1 || (plane_intersect.z - point.z) / vector.z <= 1) {
+        auto plane_intersect = triangle.intercept(point, vector);
+
+        if (!plane_intersect) {
             continue;
         }
+        // Point3D plane_intersect = triangle.interceptToPlane(point, vector);
+        
+        // if (!triangle.isInsideTriangle(plane_intersect)) {
+        //     continue; // skip to next triangle
+        // }
+        
+        // // Check if the intersection point is in front of the screen
+        // if ((plane_intersect.x - point.x) / vector.x <= 1 || (plane_intersect.y - point.y) / vector.y <= 1 || (plane_intersect.z - point.z) / vector.z <= 1) {
+        //     continue;
+        // }
 
         // Calculate the distance to the intersection point
-        float t = point.distanceToPoint(plane_intersect);
+        float t = point.distanceToPoint(plane_intersect.value());
         
         // Check if this is the closest intersection point so far
         if (t < t_min) {
             t_min = t;
 
             // Create the tuple with the triangle, intersection point, and mesh
-            std::tuple<Triangle, Point3D, TriangleMesh> tuple(triangle, plane_intersect, *this);
+            std::tuple<Triangle, Point3D, TriangleMesh> tuple(triangle, plane_intersect.value(), *this);
 
             result = tuple;
         }

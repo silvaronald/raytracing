@@ -4,6 +4,8 @@
 #include "../tools/Point3D.h"
 #include "../tools/Vector3D.h"
 
+#include <optional>
+
 class Triangle {
 public:
     Point3D p1 = Point3D();
@@ -15,8 +17,7 @@ public:
     Triangle(Point3D p1, Point3D p2, Point3D p3);
     void getNormal();
     
-    Point3D interceptToPlane(Point3D point, Vector3D vector);
-    bool isInsideTriangle(Point3D point);
+    std::optional<Point3D> intercept(Point3D point, Vector3D vector);
 };
 
 #endif /* TRIANGLE_H */

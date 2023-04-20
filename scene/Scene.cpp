@@ -76,6 +76,7 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
         else {
             float distance = point.distanceToPoint(std::get<1>(result.value()));
 
+
             if (distance < interceptDistance) {
                 interceptDistance = distance;
                 interceptedObject = "triangle";
