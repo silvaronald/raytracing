@@ -149,11 +149,13 @@ Vector3D Scene::reflexionVector(Vector3D N, Vector3D L) {
 Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float n, Point3D interceptionPoint){
     // Ambient component
     Color color = this->ambientColor;
+    color.normalized = true;
     color.multiplyValue(Ka);
-
+    //kd ks ka kr kt p
     for (auto light: this->lights) {
         // Diffuse component
         Color diffuse = Color(0, 0, 0);
+        diffuse.normalized = true;
         diffuse.sumColor(Od);
 
         diffuse.multiplyColor(light.color);
@@ -173,6 +175,7 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
 
         // Specular component
         Color specular = light.color;
+        specular.normalized = true;
 
         specular.multiplyValue(Ks);
 

@@ -6,7 +6,8 @@ public:
     float red = 0;
     float green = 0;
     float blue = 0;
-
+    bool normalized = false;
+    
     Color ();
     
     void multiplyValue (float value);
