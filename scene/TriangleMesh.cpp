@@ -125,7 +125,7 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
         float beta = (d00 * d21 - d01 * d20) / denom2;
         float gamma = 1.0f - alpha - beta;
 
-        if (alpha >= 0 && beta >= 0 && gamma >= 0 && (alpha + beta + gamma) == 1) {
+        if (alpha >= 0 && beta >= 0 && gamma >= 0) {
             // Get the interception point normal
             Vector3D N0 = vertexNormals[get<0>(this->triangleVertices[i])];
             N0.multiply(alpha);
