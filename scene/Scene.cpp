@@ -146,19 +146,27 @@ Vector3D Scene::reflexionVector(Vector3D N, Vector3D L) {
     return auxVet;
 }
 
+Color Scene::produto_hadamard(Color color1, Color color2) {
+    Color color = Color();
+    color.red = color1.red * color2.red;
+    color.green = color1.green * color2.green;
+    color.blue = color1.blue * color2.blue;
+    color.normalized = true;
+    color.truncate();
+    return color;
+}
+
 Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float n, Point3D interceptionPoint){
     // Ambient component
     Color color = this->ambientColor;
     color.normalized = true;
     color.multiplyValue(Ka);
+    Color DifSpec = Color(0,0,0);
+    DifSpec.normalized = true;
     //kd ks ka kr kt p
     for (auto light: this->lights) {
         // Diffuse component
-        Color diffuse = Color(0, 0, 0);
-        diffuse.normalized = true;
-        diffuse.sumColor(Od);
-
-        diffuse.multiplyColor(light.color);
+        Color diffuse = produto_hadamard(light.color, Od);
 
         diffuse.multiplyValue(Kd);
 
@@ -170,9 +178,7 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
         float zero = 0;
 
         diffuse.multiplyValue(std::max(zero, L.dotProduct(N)));
-
-        color.sumColor(diffuse);
-
+        
         // Specular component
         Color specular = light.color;
         specular.normalized = true;
@@ -182,11 +188,13 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
         Vector3D R  = this->reflexionVector(N, L);
         R.normalize();
 
-        specular.multiplyValue(std::pow(R.dotProduct(V), n));
+        specular.multiplyValue(std::pow(std::max(zero,R.dotProduct(V)), n));
 
-        color.sumColor(specular);
+        DifSpec.sumColor(diffuse);
+        DifSpec.sumColor(specular);
     }
 
+    color.sumColor(DifSpec);
     color.denormalize();
 
     return color;
