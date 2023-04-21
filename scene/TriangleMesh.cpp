@@ -1,7 +1,5 @@
 #include "TriangleMesh.h"
 
-using namespace std;
-
 TriangleMesh::TriangleMesh () {};
 TriangleMesh::TriangleMesh(
         vector<Point3D> vertices,
@@ -72,13 +70,20 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
     float interceptionDistance = std::numeric_limits<float>::max(); // minimum distance to intersection
 
     std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> result = std::nullopt;
+    //cout << this->triangleVertices.size() << endl;
+    //cout << "point " << point.x << " " << point.y << " " << point.z << endl;
+    //cout << "vector " << vector.x << " " << vector.y << " " << vector.z << endl;
 
     // Iterate over all triangles in the mesh
-    for (int i = 0; i < this->triangleVertices.size(); i++) {
+    for(int i = 0; i < this->triangleVertices.size(); i++) {
+        //cout << "Triangle " << i << endl;
+        
         Point3D P0 = this->vertices[get<0>(this->triangleVertices[i])];
         Point3D P1 = this->vertices[get<1>(this->triangleVertices[i])];
         Point3D P2 = this->vertices[get<2>(this->triangleVertices[i])];
-        
+        //cout << "P0: " << P0.x << " " << P0.y << " " << P0.z << endl;
+        //cout << "P1: " << P1.x << " " << P1.y << " " << P1.z << endl;
+        //cout << "P2: " << P2.x << " " << P2.y << " " << P2.z << endl;
         Vector3D triangleNormal = this->triangleNormals[i];
 
         // Step 1: Check if the line intersects the plane of the triangle
@@ -92,6 +97,7 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
 
         if (t > 1) {
             // Point is behind screen
+            cout << "Point is behind screen" << i << endl;
             continue;
         }
 
@@ -105,49 +111,34 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
             interceptionDistance = distance;
         }
         else {
+            cout << "Distance is greater than interceptionDistance" << i << endl;
             continue;
         }
 
         // Step 2: Check if the intersection point is inside the triangle
-        Vector3D v0 = P0.getVectorToPoint(P1);
-        Vector3D v1 = P0.getVectorToPoint(P2);
-        Vector3D v2 = P0.getVectorToPoint(intersectionPoint);
+        double denom2 = (P1.y - P2.y)*(P0.x - P2.x) + (P2.x - P1.x)*(P0.y - P2.y);
+        double alpha = ((P1.y - P2.y)*(intersectionPoint.x - P2.x) + (P2.x - P1.x)*(intersectionPoint.y - P2.y)) / denom2;
+        double beta = ((P2.y - P0.y)*(intersectionPoint.x - P2.x) + (P0.x - P2.x)*(intersectionPoint.y - P2.y)) / denom2;
+        double gamma = 1 - alpha - beta;
 
-        float d00 = v0.dotProduct(v0);
-        float d01 = v0.dotProduct(v1);
-        float d11 = v1.dotProduct(v1);
-        float d20 = v2.dotProduct(v0);
-        float d21 = v2.dotProduct(v1);
+        //cout << "alpha + beta + gamma = " << alpha + beta + gamma << endl;
+        //cout << "alpha = " << alpha << " beta = " << beta << " gamma = " << gamma << endl;
 
-        float denom2 = d00 * d11 - d01 * d01;
-
-        float alpha = (d11 * d20 - d01 * d21) / denom2;
-        float beta = (d00 * d21 - d01 * d20) / denom2;
-        float gamma = 1.0f - alpha - beta;
-
-        if (alpha >= 0 && beta >= 0 && gamma >= 0 && (alpha + beta + gamma) == 1) {
-            // Get the interception point normal
-            Vector3D N0 = vertexNormals[get<0>(this->triangleVertices[i])];
-            N0.multiply(alpha);
-
-            Vector3D N1 = vertexNormals[get<1>(this->triangleVertices[i])];
-            N1.multiply(beta);
-
-            Vector3D N2 = vertexNormals[get<2>(this->triangleVertices[i])];
-            N2.multiply(gamma);
-
-            Vector3D vertexNormal;
-            vertexNormal.sumVector(N0);
-            vertexNormal.sumVector(N1);
-            vertexNormal.sumVector(N2);
-            vertexNormal.normalize();
-
+        const double TOLERANCE = 1e-9;
+        if (alpha > 0 && beta > 0 && gamma > 0 && std::abs(alpha + beta + gamma - 1.0) < TOLERANCE) {
+            //cout << alpha << " " << beta << " " << gamma << endl;
+            
             // Create the tuple with the point normal vector, intersection point, and mesh
-            std::tuple<Vector3D, Point3D, TriangleMesh> tuple(vertexNormal, intersectionPoint, *this);
+            std::tuple<Vector3D, Point3D, TriangleMesh> tuple(vertexNormals[i], intersectionPoint, *this);
 
             result = tuple;
+            //cout << "Point is inside triangle " << endl;
+            //cout << "intercepted point" << intersectionPoint.x << " " << intersectionPoint.y << " " << intersectionPoint.z << endl;
         }
         else {
+            //cout << "Point is not inside triangle " << endl;
+            //cout << "intercepted point" << intersectionPoint.x << " " << intersectionPoint.y << " " << intersectionPoint.z << endl;
+            //cout << "Point is not inside triangle" << i << endl;
             continue;  // isn't inside the triangle
         }
     }
