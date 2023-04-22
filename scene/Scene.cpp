@@ -6,12 +6,12 @@
 #include <iostream>
 #include <tuple>
 
-Scene::Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> planes, std::vector<TriangleMesh> triangles, std::vector<Light> lights) {
+Scene::Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> planes, std::vector<TriangleMesh> trianglesMeshes, std::vector<Light> lights) {
     this->ambientColor = color;
     this->ambientColor.normalize();
     this->spheres = spheres;
     this->planes = planes;
-    this->triangles = triangles;
+    this->trianglesMeshes = trianglesMeshes;
     this->lights = lights;
 }
 
@@ -66,7 +66,37 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
         }
     }
 
-    for (auto triangleMesh: this->triangles) {
+    for (int i = 0; i < this->trianglesMeshes.size(); i++) {
+        auto result = this->trianglesMeshes[i].intercept(point, vector);
+
+        if (!result) {
+            continue;
+        }
+        else {
+            float distance = point.distanceToPoint(std::get<1>(result.value()));
+
+            if (distance < interceptDistance) {
+                interceptDistance = distance;
+                interceptedObject = "triangle";
+
+                normalVector = std::get<0>(result.value());
+                interceptedPoint = std::get<1>(result.value());
+                interceptedTriangleMesh = std::get<2>(result.value());
+            }
+            /*
+        for (int  j = 0; j < this->trianglesMeshes[i].triangleVertices.size(); j++) {
+            cout << "Triangle: " << j << " ";
+            for (int k = 0; k < this->trianglesMeshes[i].vertices.size(); k++) {
+                cout << "Vertice: " << k << " | X " << this->trianglesMeshes[i].vertices[k].x << " Y " << this->trianglesMeshes[i].vertices[k].y << " Z " << this->trianglesMeshes[i].vertices[k].z << " | ";
+            }
+            cout << endl;
+        }
+            */
+        }
+    }
+/*
+    for (auto triangleMesh: this->trianglesMeshes) {
+        
         auto result = triangleMesh.intercept(point, vector);
 
         if (!result) {
@@ -74,6 +104,7 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
         }
         else {
             float distance = point.distanceToPoint(std::get<1>(result.value()));
+            
 
 
             if (distance < interceptDistance) {
@@ -86,6 +117,7 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
             }
         }
     }
+*/
 
     if (interceptedObject == "") {
         // No interception

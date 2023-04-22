@@ -21,7 +21,7 @@ public:
 
     std::vector<Sphere> spheres;
     std::vector<Plane> planes;
-    std::vector<TriangleMesh> triangles;
+    std::vector<TriangleMesh> trianglesMeshes;
     std::vector<Light> lights;
 
     Vector3D reflexionVector(Vector3D N, Vector3D L);

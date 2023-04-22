@@ -91,7 +91,6 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
 
         if (t > 1) {
             // Point is behind screen
-            cout << "Point is behind screen" << i << endl;
             continue;
         }
 
@@ -105,7 +104,6 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
             interceptionDistance = distance;
         }
         else {
-            cout << "Distance is greater than interceptionDistance" << i << endl;
             continue;
         }
 
