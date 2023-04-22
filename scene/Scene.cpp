@@ -135,6 +135,8 @@ Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
                         interceptedSphere.center.getVectorToPoint(interceptedPoint), 
                         interceptedSphere.specularCoefficient, 
                         V, 
+                        interceptedSphere.reflectionCoefficient,
+                        interceptedSphere.transmissionCoefficient,
                         interceptedSphere.rugosityCoefficient,
                         interceptedPoint);
     }
@@ -149,6 +151,8 @@ Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
                         interceptedPlane.normalVector, 
                         interceptedPlane.specularCoefficient, 
                         V, 
+                        interceptedPlane.reflectionCoefficient,
+                        interceptedPlane.transmissionCoefficient,
                         interceptedPlane.rugosityCoefficient,
                         interceptedPoint);
     }
@@ -239,7 +243,7 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
         reflexion.multiplyValue(Kr);
     }
     if(Kt > 0) {
-        
+
     }
     
     return color;
