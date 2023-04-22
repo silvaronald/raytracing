@@ -1,5 +1,4 @@
 #include "Scene.h"
-#include "TriangleMesh.h"
 
 #include <algorithm>
 #include <math.h>
@@ -15,7 +14,8 @@ Scene::Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> plane
     this->lights = lights;
 }
 
-Color Scene::intercept (Point3D point, Vector3D vector) {
+Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
+    this->depht = MAX_DEPTH;
     Color color = this->ambientColor;
 
     string interceptedObject = "";
@@ -163,6 +163,8 @@ Color Scene::intercept (Point3D point, Vector3D vector) {
                         normalVector, 
                         interceptedTriangleMesh.specularCoefficient, 
                         V, 
+                        interceptedTriangleMesh.reflectionCoefficient,
+                        interceptedTriangleMesh.transmissionCoefficient,
                         interceptedTriangleMesh.rugosityCoefficient,
                         interceptedPoint);
     }
@@ -188,7 +190,7 @@ Color Scene::produto_hadamard(Color color1, Color color2) {
     return color;
 }
 
-Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float n, Point3D interceptionPoint){
+Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float Kr, float Kt, float n, Point3D interceptionPoint){
     // Ambient component
     Color color = this->ambientColor;
     color.normalized = true;
@@ -227,7 +229,18 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
     }
 
     color.sumColor(DifSpec);
-    color.denormalize();
-
+    //color.denormalize();
+    // Recursive call
+    if (this->depht > 0 && Kr > 0) {
+        Vector3D R = this->reflexionVector(N, V);
+        R.normalize();
+        Point3D newPoint = interceptionPoint;
+        Color reflexion = this->intercept(newPoint, R, depht - 1);
+        reflexion.multiplyValue(Kr);
+    }
+    if(Kt > 0) {
+        
+    }
+    
     return color;
 }
