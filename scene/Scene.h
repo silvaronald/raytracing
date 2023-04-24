@@ -26,6 +26,7 @@ public:
     int depht;
 
     Vector3D reflexionVector(Vector3D N, Vector3D L);
+    Vector3D refractionVector(Vector3D N, Vector3D L, float n);
     Color phong (float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float Kr, float Kt, float n, Point3D interceptionPoint);
     Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> planes, std::vector<TriangleMesh> triangles, std::vector<Light> lights);
     Color intercept(Point3D point, Vector3D vector, int MAX_DEPTH);

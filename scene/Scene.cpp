@@ -194,6 +194,25 @@ Color Scene::produto_hadamard(Color color1, Color color2) {
     return color;
 }
 
+
+Vector3D Scene::refractionVector(Vector3D incident, Vector3D normal, float eta) {
+    Vector3D incident_inv = incident;
+    incident_inv.multiply(-1.0f);
+    float cos_i = normal.dotProduct(incident_inv);
+    float sin_t2 = eta * eta * (1.0f - cos_i * cos_i);
+    if (sin_t2 > 1.0f) {
+        // Reflexão total interna
+        return reflexionVector(incident, normal);
+    }
+    float cos_t = sqrtf(1.0f - sin_t2);
+    Vector3D T = incident;
+    T.multiply(eta);
+    T.x += (eta * cos_i - cos_t) * normal.x;
+    T.y += (eta * cos_i - cos_t) * normal.y;
+    T.z += (eta * cos_i - cos_t) * normal.z;
+    return T;
+}
+
 Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float Kr, float Kt, float n, Point3D interceptionPoint){
     // Ambient component
     Color color = this->ambientColor;
@@ -236,15 +255,22 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
     //color.denormalize();
     // Recursive call
     if (this->depht > 0 && Kr > 0) {
+        cout << this->depht << endl;
         Vector3D R = this->reflexionVector(N, V);
         R.normalize();
         Point3D newPoint = interceptionPoint;
+        cout << "newPoint: " << newPoint.x << " " << newPoint.y << " " << newPoint.z << endl;
         Color reflexion = this->intercept(newPoint, R, depht - 1);
         reflexion.multiplyValue(Kr);
+        color.sumColor(reflexion);
     }
     if(Kt > 0) {
-
+        Vector3D T = this->refractionVector(V, N, Kt);
+        T.normalize();
+        Point3D newPoint = interceptionPoint;
+        Color refraction = this->intercept(newPoint, T, 5);
+        refraction.multiplyValue(Kt);
+        color.sumColor(refraction);
     }
-    
     return color;
 }
