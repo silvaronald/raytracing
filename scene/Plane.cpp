@@ -20,7 +20,6 @@ Plane::Plane(
     this->planePoint = planePoint;
     this->normalVector = normalVector;
     this->color = color;
-    this->color.normalize();
 
     this->diffuseCoefficient = diffuseCoefficient;
     this->specularCoefficient = specularCoefficient;

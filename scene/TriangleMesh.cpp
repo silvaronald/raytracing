@@ -13,7 +13,6 @@ TriangleMesh::TriangleMesh(
         float rugosityCoefficient) {
 
     this->color = color;
-    this->color.normalize();
     this->diffuseCoefficient = diffuseCoefficient;
     this->specularCoefficient = specularCoefficient;
     this->ambientCoefficient = ambientCoefficient;

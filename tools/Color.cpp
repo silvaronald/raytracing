@@ -6,7 +6,7 @@ Color::Color (float red, float green, float blue) {
     this->green = green;
 
     this->blue = blue;
-
+    normalize();
     truncate();
 }
 
@@ -56,75 +56,42 @@ void Color::setColor (float red, float green, float blue) {
 }
 
 void Color::truncate () {
-    if (this->normalized) {
-        if (this->red < 0) {
-        this->red = 0;
-        }
-        else if (this->red > 1) {
-            this->red = 1;
-        }
-
-        if (this->green < 0) {
-            this->green = 0;
-        }
-        else if (this->green > 1) {
-            this->green = 1;
-        }
-
-        if (this->green < 0) {
-            this->green = 0;
-        }
-        else if (this->green > 1) {
-            this->green = 1;
-        }
-        if (this->blue < 0) {
-            this->blue = 0;
-        }
-        else if (this->blue > 1) {
-            this->blue = 1;
-        }
+    if (this->red < 0) {
+    this->red = 0;
     }
-    else {
-        if (this->red < 0) {
-            this->red = 0;
-        }
-        else if (this->red > 255) {
-            this->red = 255;
-        }
-
-        if (this->green < 0) {
-            this->green = 0;
-        }
-        else if (this->green > 255) {
-            this->green = 255;
-        }
-
-        if (this->green < 0) {
-            this->green = 0;
-        }
-        else if (this->green > 255) {
-            this->green = 255;
-        }
-        if (this->blue < 0) {
-            this->blue = 0;
-        }
-        else if (this->blue > 255) {
-            this->blue = 255;
-        }
+    else if (this->red > 1) {
+        this->red = 1;
     }
-    
+
+    if (this->green < 0) {
+        this->green = 0;
+    }
+    else if (this->green > 1) {
+        this->green = 1;
+    }
+
+    if (this->green < 0) {
+        this->green = 0;
+    }
+    else if (this->green > 1) {
+        this->green = 1;
+    }
+    if (this->blue < 0) {
+        this->blue = 0;
+    }
+    else if (this->blue > 1) {
+        this->blue = 1;
+    }
 }
 
 void Color::normalize() {
     this->red = this->red / 255;
     this->green = this->green / 255;
     this->blue = this->blue / 255;
-    this->normalized = true;
 }
 
 void Color::denormalize() {
     this->red = this->red * 255;
     this->green = this->green * 255;
     this->blue = this->blue * 255;
-    this->normalized = false;
 }

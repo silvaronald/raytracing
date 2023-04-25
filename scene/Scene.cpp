@@ -189,7 +189,6 @@ Color Scene::produto_hadamard(Color color1, Color color2) {
     color.red = color1.red * color2.red;
     color.green = color1.green * color2.green;
     color.blue = color1.blue * color2.blue;
-    color.normalized = true;
     color.truncate();
     return color;
 }
@@ -216,10 +215,8 @@ Vector3D Scene::refractionVector(Vector3D incident, Vector3D normal, float eta) 
 Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float Kr, float Kt, float n, Point3D interceptionPoint){
     // Ambient component
     Color color = this->ambientColor;
-    color.normalized = true;
     color.multiplyValue(Ka);
     Color DifSpec = Color(0,0,0);
-    DifSpec.normalized = true;
     //kd ks ka kr kt p
     for (auto light: this->lights) {
         // Diffuse component
@@ -238,7 +235,6 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
         
         // Specular component
         Color specular = light.color;
-        specular.normalized = true;
 
         specular.multiplyValue(Ks);
 
@@ -254,12 +250,13 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
     color.sumColor(DifSpec);
     //color.denormalize();
     // Recursive call
+    /*
     if (this->depht > 0 && Kr > 0) {
         cout << this->depht << endl;
         Vector3D R = this->reflexionVector(N, V);
         R.normalize();
         Point3D newPoint = interceptionPoint;
-        cout << "newPoint: " << newPoint.x << " " << newPoint.y << " " << newPoint.z << endl;
+        //cout << "newPoint: " << newPoint.x << " " << newPoint.y << " " << newPoint.z << endl;
         Color reflexion = this->intercept(newPoint, R, depht - 1);
         reflexion.multiplyValue(Kr);
         color.sumColor(reflexion);
@@ -272,5 +269,6 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
         refraction.multiplyValue(Kt);
         color.sumColor(refraction);
     }
+    */
     return color;
 }
