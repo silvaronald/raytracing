@@ -7,7 +7,6 @@
 
 Scene::Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> planes, std::vector<TriangleMesh> trianglesMeshes, std::vector<Light> lights) {
     this->ambientColor = color;
-    this->ambientColor.normalize();
     this->spheres = spheres;
     this->planes = planes;
     this->trianglesMeshes = trianglesMeshes;

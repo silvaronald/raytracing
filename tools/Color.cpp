@@ -45,16 +45,6 @@ void Color::multiplyValue(float value) {
     truncate();
 }
 
-void Color::setColor (float red, float green, float blue) {
-    this->red = red;
-
-    this->green = green;
-
-    this->blue = blue;
-
-    truncate();
-}
-
 void Color::truncate () {
     if (this->red < 0) {
     this->red = 0;
