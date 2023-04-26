@@ -85,29 +85,6 @@ Color Scene::intercept (Point3D point, Vector3D vector, int depth) {
         }
     }
 
-    for (auto triangleMesh: this->trianglesMeshes) {
-        
-        auto result = triangleMesh.intercept(point, vector);
-
-        if (!result) {
-            continue;
-        }
-        else {
-            float distance = point.distanceToPoint(std::get<1>(result.value()));
-            
-
-
-            if (distance < interceptDistance) {
-                interceptDistance = distance;
-                interceptedObject = "triangle";
-
-                normalVector = std::get<0>(result.value());
-                interceptedPoint = std::get<1>(result.value());
-                interceptedTriangleMesh = std::get<2>(result.value());
-            }
-        }
-    }
-
     if (interceptedObject == "") {
         // No interception
         return color;
