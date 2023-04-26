@@ -33,7 +33,7 @@ int main() {
     readFile();
 
     // Create scene object
-    Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
+    Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights, camera);
 
     cout << "Scene created!" << endl;
 

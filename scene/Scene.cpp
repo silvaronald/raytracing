@@ -5,12 +5,13 @@
 #include <iostream>
 #include <tuple>
 
-Scene::Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> planes, std::vector<TriangleMesh> trianglesMeshes, std::vector<Light> lights) {
+Scene::Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> planes, std::vector<TriangleMesh> trianglesMeshes, std::vector<Light> lights, Camera camera) {
     this->ambientColor = color;
     this->spheres = spheres;
     this->planes = planes;
     this->trianglesMeshes = trianglesMeshes;
     this->lights = lights;
+    this->camera = camera;
 }
 
 Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
@@ -179,7 +180,7 @@ Vector3D Scene::reflexionVector(Vector3D N, Vector3D L) {
     auto constant = N.dotProduct(L)*2; 
     N.multiply(constant);
     Vector3D auxVet;
-    auxVet.setVector(N.x - L.x, N.y - L.y, N.z - L.z);
+    auxVet.setVector(L.x - N.x, L.y - N.y, L.z - N.z);
     return auxVet;
 }
 
@@ -249,17 +250,14 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
     color.sumColor(DifSpec);
     //color.denormalize();
     // Recursive call
-    /*
     if (this->depht > 0 && Kr > 0) {
-        cout << this->depht << endl;
-        Vector3D R = this->reflexionVector(N, V);
+        Vector3D R = this->reflexionVector(N, interceptionPoint.getVectorToPoint(camera.localization));
         R.normalize();
-        Point3D newPoint = interceptionPoint;
-        //cout << "newPoint: " << newPoint.x << " " << newPoint.y << " " << newPoint.z << endl;
-        Color reflexion = this->intercept(newPoint, R, depht - 1);
+        Color reflexion = this->intercept(interceptionPoint, R, depht - 1);
         reflexion.multiplyValue(Kr);
         color.sumColor(reflexion);
     }
+    /*
     if(Kt > 0) {
         Vector3D T = this->refractionVector(V, N, Kt);
         T.normalize();
