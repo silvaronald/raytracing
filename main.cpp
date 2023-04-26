@@ -76,7 +76,7 @@ int main() {
 
             Vector3D cameraToPixel = camera.localization.getVectorToPoint(pixelPoint);
             
-            Color color = scene.intercept(camera.localization, cameraToPixel, 5);
+            Color color = scene.intercept(camera.localization, cameraToPixel, 50);
             color.denormalize();
 
             outfile << static_cast<char>(color.red) << static_cast<char>(color.green) << static_cast<char>(color.blue);
