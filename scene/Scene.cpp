@@ -14,8 +14,7 @@ Scene::Scene (Color color, std::vector<Sphere> spheres, std::vector<Plane> plane
     this->camera = camera;
 }
 
-Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
-    this->depht = MAX_DEPTH;
+Color Scene::intercept (Point3D point, Vector3D vector, int depth) {
     Color color = this->ambientColor;
 
     string interceptedObject = "";
@@ -83,18 +82,9 @@ Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
                 interceptedPoint = std::get<1>(result.value());
                 interceptedTriangleMesh = std::get<2>(result.value());
             }
-            /*
-        for (int  j = 0; j < this->trianglesMeshes[i].triangleVertices.size(); j++) {
-            cout << "Triangle: " << j << " ";
-            for (int k = 0; k < this->trianglesMeshes[i].vertices.size(); k++) {
-                cout << "Vertice: " << k << " | X " << this->trianglesMeshes[i].vertices[k].x << " Y " << this->trianglesMeshes[i].vertices[k].y << " Z " << this->trianglesMeshes[i].vertices[k].z << " | ";
-            }
-            cout << endl;
-        }
-            */
         }
     }
-/*
+
     for (auto triangleMesh: this->trianglesMeshes) {
         
         auto result = triangleMesh.intercept(point, vector);
@@ -117,11 +107,9 @@ Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
             }
         }
     }
-*/
 
     if (interceptedObject == "") {
         // No interception
-        color.denormalize();
         return color;
     }
 
@@ -138,7 +126,9 @@ Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
                         interceptedSphere.reflectionCoefficient,
                         interceptedSphere.transmissionCoefficient,
                         interceptedSphere.rugosityCoefficient,
-                        interceptedPoint);
+                        interceptedPoint,
+                        point,
+                        depth);
     }
     else if (interceptedObject == "plane") {
         if (interceptedPlane.normalVector.dotProduct(interceptedPlane.planePoint.getVectorToPoint(point)) < 0) {
@@ -154,7 +144,9 @@ Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
                         interceptedPlane.reflectionCoefficient,
                         interceptedPlane.transmissionCoefficient,
                         interceptedPlane.rugosityCoefficient,
-                        interceptedPoint);
+                        interceptedPoint,
+                        point,
+                        depth);
     }
     else if (interceptedObject == "triangle") {
         if (normalVector.dotProduct(interceptedPoint.getVectorToPoint(point)) < 0) {
@@ -170,7 +162,9 @@ Color Scene::intercept (Point3D point, Vector3D vector, int MAX_DEPTH = 5) {
                         interceptedTriangleMesh.reflectionCoefficient,
                         interceptedTriangleMesh.transmissionCoefficient,
                         interceptedTriangleMesh.rugosityCoefficient,
-                        interceptedPoint);
+                        interceptedPoint,
+                        point,
+                        depth);
     }
 
     return color;
@@ -184,16 +178,6 @@ Vector3D Scene::reflexionVector(Vector3D N, Vector3D L) {
     return auxVet;
 }
 
-Color Scene::produto_hadamard(Color color1, Color color2) {
-    Color color = Color();
-    color.red = color1.red * color2.red;
-    color.green = color1.green * color2.green;
-    color.blue = color1.blue * color2.blue;
-    color.truncate();
-    return color;
-}
-
-
 Vector3D Scene::refractionVector(Vector3D incident, Vector3D normal, float eta) {
     Vector3D normal_inv = normal;
     normal_inv.multiply(-1.0f);
@@ -201,7 +185,7 @@ Vector3D Scene::refractionVector(Vector3D incident, Vector3D normal, float eta) 
     float sin_t2 = eta * sqrt(1.0f - cos_i * cos_i);
     if (sin_t2 >= 1.0f) {
         // Reflexão total interna
-        return this->reflexionVector(normal, incident);
+        return Vector3D(0, 0, 0);
     }
     float cos_t = sqrtf(1.0f - sin_t2 * sin_t2);
     Vector3D T;
@@ -212,15 +196,23 @@ Vector3D Scene::refractionVector(Vector3D incident, Vector3D normal, float eta) 
     return T;
 }
 
-Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float Kr, float Kt, float n, Point3D interceptionPoint){
+Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D V, float Kr, float Kt, float n, Point3D interceptionPoint, Point3D raycastPoint, int depth){
+    Color color = Color();
+
     // Ambient component
-    Color color = this->ambientColor;
-    color.multiplyValue(Ka);
+    if (depth == 1) {
+        color.sumColor(this->ambientColor);
+        color.multiplyValue(Ka);
+    }
+
     Color DifSpec = Color(0,0,0);
     //kd ks ka kr kt p
     for (auto light: this->lights) {
         // Diffuse component
-        Color diffuse = produto_hadamard(light.color, Od);
+        Color diffuse = Color(0, 0, 0);
+        diffuse.sumColor(Od);
+
+        diffuse.multiplyColor(light.color);
 
         diffuse.multiplyValue(Kd);
 
@@ -229,10 +221,10 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
 
         N.normalize();
 
-        float zero = 0;
-
-        diffuse.multiplyValue(std::max(zero, L.dotProduct(N)));
+        diffuse.multiplyValue(std::max(0.f, L.dotProduct(N)));
         
+        color.sumColor(diffuse);
+
         // Specular component
         Color specular = light.color;
 
@@ -241,31 +233,38 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks, Vector3D 
         Vector3D R  = this->reflexionVector(N, L);
         R.normalize();
 
-        specular.multiplyValue(std::pow(std::max(zero,R.dotProduct(V)), n));
+        specular.multiplyValue(std::pow(std::max(0.f,R.dotProduct(V)), n));
 
-        DifSpec.sumColor(diffuse);
-        DifSpec.sumColor(specular);
+        color.sumColor(specular);
     }
 
-    color.sumColor(DifSpec);
-    //color.denormalize();
     // Recursive call
-    if (this->depht > 0 && Kr > 0) {
-        Vector3D R = this->reflexionVector(N, interceptionPoint.getVectorToPoint(camera.localization));
-        R.normalize();
-        Color reflexion = this->intercept(interceptionPoint, R, depht - 1);
-        reflexion.multiplyValue(Kr);
-        color.sumColor(reflexion);
+    if (depth < this->depth - 1) {
+        // Reflexion
+        if (Kr > 0) {
+            Vector3D R = this->reflexionVector(N, interceptionPoint.getVectorToPoint(raycastPoint));
+            R.normalize();
+
+            Color reflexion = this->intercept(interceptionPoint, R, depth + 1);
+            reflexion.multiplyValue(Kr);
+
+            color.sumColor(reflexion);
+        }
+
+        // Refraction  
+        if(Kt > 0) {
+            Vector3D T = this->refractionVector(V, N, Kt);
+
+            if (!(T.x == 0 && T.y == 0 && T.z == 0)) { // checking for total reflexion
+                T.normalize();
+
+                Color refraction = this->intercept(interceptionPoint, T, depth + 1);
+                refraction.multiplyValue(Kt);
+
+                color.sumColor(refraction);
+            }
+        }
     }
-    if(Kt > 0 && this->depht > 0) {
-        Vector3D T = this->refractionVector(V, N, Kt);
-        T.normalize();
-        Color refraction = this->intercept(interceptionPoint, T, this->depht - 1);
-        refraction.multiplyValue(Kt);
-        color.sumColor(refraction);
-    }
-    
-    /*
-    */
+
     return color;
 }
