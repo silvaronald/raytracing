@@ -51,7 +51,7 @@ int main() {
     float halfScreenHeight = screenHeight / 2.0f;
     float rowStart = (screenHeight % 2 == 0 ? halfScreenHeight - 0.5f : std::ceil(halfScreenHeight));
 
-    #pragma omp parallel for schedule(dynamic) // Use parallelism (nem sei se funciona)
+    //#pragma omp parallel for schedule(dynamic) // Use parallelism (nem sei se funciona)
 
     Vector3D distVector = camera.vectorW;
     distVector.multiply(camera.distanceToScreen);

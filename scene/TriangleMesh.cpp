@@ -72,7 +72,7 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
 
     // Iterate over all triangles in the mesh
     for(int i = 0; i < this->triangleVertices.size(); i++) {
-        
+        // See https://courses.cs.washington.edu/courses/csep557/10au/lectures/triangle_intersection.pdf
         Point3D P0 = this->vertices[get<0>(this->triangleVertices[i])];
         Point3D P1 = this->vertices[get<1>(this->triangleVertices[i])];
         Point3D P2 = this->vertices[get<2>(this->triangleVertices[i])];
@@ -86,39 +86,72 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
             continue;  // No intersection
         }
 
-        float t = triangleNormal.dotProduct(P0.getVectorToPoint(point)) / denom;
+        Vector3D vectorCameraToPlane = point.getVectorToPoint(P0);
+        float numerator = vectorCameraToPlane.dotProduct(triangleNormal);
 
-        if (t > 1) {
-            // Point is behind screen
+        float t = numerator / denom;
+
+        if (t <= 1) {
+            // is at most behind the screen
             continue;
         }
-
-        vector.multiply(-t);
+        
+        vector.multiply(t);
 
         Point3D intersectionPoint = point.sumVectorToPoint(vector);
         
         float distance = intersectionPoint.distanceToPoint(point);
 
-        if (distance < interceptionDistance) {
-            interceptionDistance = distance;
-        }
-        else {
+        if (distance >= interceptionDistance) {
             continue;
         }
 
         // Step 2: Check if the intersection point is inside the triangle
-        double denom2 = (P1.y - P2.y)*(P0.x - P2.x) + (P2.x - P1.x)*(P0.y - P2.y);
-        double alpha = ((P1.y - P2.y)*(intersectionPoint.x - P2.x) + (P2.x - P1.x)*(intersectionPoint.y - P2.y)) / denom2;
-        double beta = ((P2.y - P0.y)*(intersectionPoint.x - P2.x) + (P0.x - P2.x)*(intersectionPoint.y - P2.y)) / denom2;
-        double gamma = 1 - alpha - beta;
+        Vector3D V1 = P0.getVectorToPoint(P1);
+        Vector3D V2 = P0.getVectorToPoint(P2);
+        Vector3D normal = V1.crossProduct(V2);
+        Vector3D P = P0.getVectorToPoint(intersectionPoint);
 
-        const double TOLERANCE = 1e-9;
-        if (alpha >= 0 && beta >= 0 && gamma >= 0 && std::abs(alpha + beta + gamma - 1.0) < TOLERANCE) {
-            
+        // Vector3D C1 = V1.crossProduct(P);
+        // Vector3D C2 = V1.crossProduct(P);
+
+        double d00 = V1.dotProduct(V1);
+        double d01 = V1.dotProduct(V2);
+        double d11 = V2.dotProduct(V2);
+        double d20 = P.dotProduct(V1);
+        double d21 = P.dotProduct(V2);
+
+        double denom2 = d00 * d11 - d01 * d01;
+        
+        double beta = (d11 * d20 - d01 * d21) / denom2;
+        double gamma = (d00 * d21 - d01 * d20) / denom2;
+        double alpha = 1.0 - beta - gamma;
+        // float beta = C1.getNorm() / triangleNormal.getNorm();
+        // float gamma = C2.getNorm() / triangleNormal.getNorm();
+        // float alpha = 1.f - beta - gamma;
+
+        if (alpha >= 0.f && alpha <= 1.f && beta >= 0.f && beta <= 1.f && gamma >= 0.f && gamma <= 1.f) {
             // Create the tuple with the point normal vector, intersection point, and mesh
-            std::tuple<Vector3D, Point3D, TriangleMesh> tuple(vertexNormals[i], intersectionPoint, *this);
+            Vector3D normalVector;
+            Vector3D alphaVector = vertexNormals[get<0>(this->triangleVertices[i])];
+            alphaVector.multiply(alpha);
+
+            Vector3D betaVector = vertexNormals[get<1>(this->triangleVertices[i])];
+            betaVector.multiply(beta);
+
+            Vector3D gammaVector = vertexNormals[get<2>(this->triangleVertices[i])];
+            gammaVector.multiply(gamma);
+
+            normalVector.sumVector(alphaVector);
+            normalVector.sumVector(betaVector);
+            normalVector.sumVector(gammaVector);
+            normalVector.normalize();
+
+            std::tuple<Vector3D, Point3D, TriangleMesh> tuple(normalVector, intersectionPoint, *this);
 
             result = tuple;
+
+            interceptionDistance = distance;
         }
         else {
             continue;  // isn't inside the triangle

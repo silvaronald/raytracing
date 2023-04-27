@@ -66,25 +66,6 @@ Color Scene::intercept(Point3D point, Vector3D vector, int depth) {
     }
   }
 
-  for (int i = 0; i < this->trianglesMeshes.size(); i++) {
-    auto result = this->trianglesMeshes[i].intercept(point, vector);
-
-    if (!result) {
-      continue;
-    } else {
-      float distance = point.distanceToPoint(std::get<1>(result.value()));
-
-      if (distance < interceptDistance) {
-        interceptDistance = distance;
-        interceptedObject = "triangle";
-
-        normalVector = std::get<0>(result.value());
-        interceptedPoint = std::get<1>(result.value());
-        interceptedTriangleMesh = std::get<2>(result.value());
-      }
-    }
-  }
-
   for (auto triangleMesh : this->trianglesMeshes) {
 
     auto result = triangleMesh.intercept(point, vector);
@@ -199,29 +180,29 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks,
   }
 
   // Recursive call
-  // if (depth < this->depth) {
-  //   // Reflexion
-  //   if (Kr > 0) {
-  //     Vector3D R = this->reflexionVector(N, V);
+  if (depth < this->depth) {
+    // Reflexion
+    if (Kr > 0) {
+      Vector3D R = this->reflexionVector(N, V);
 
-  //     Color reflexion = this->intercept(interceptionPoint, R, depth + 1);
-  //     reflexion.multiplyValue(Kr);
+      Color reflexion = this->intercept(interceptionPoint, R, depth + 1);
+      reflexion.multiplyValue(Kr);
 
-  //     color.sumColor(reflexion);
-  //   }
+      color.sumColor(reflexion);
+    }
 
-  //   // Refraction
-  //   if (Kt > 0) {
-  //     Vector3D T = this->refractionVector(V, N);
+    // Refraction
+    if (Kt > 0) {
+      Vector3D T = this->refractionVector(V, N);
 
-  //     if (!(T.x == 0 && T.y == 0 && T.z == 0)) { // checking for total reflexion
-  //       Color refraction = this->intercept(interceptionPoint, T, depth + 1);
-  //       refraction.multiplyValue(Kt);
+      if (!(T.x == 0 && T.y == 0 && T.z == 0)) { // checking for total reflexion
+        Color refraction = this->intercept(interceptionPoint, T, depth + 1);
+        refraction.multiplyValue(Kt);
 
-  //       color.sumColor(refraction);
-  //     }
-  //   }
-  // }
+        color.sumColor(refraction);
+      }
+    }
+  }
 
   return color;
 }
