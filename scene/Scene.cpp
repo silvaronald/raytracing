@@ -208,6 +208,15 @@ Color Scene::phong(float Ka, Color Od, float Kd, Vector3D N, float Ks,
 }
 
 Vector3D Scene::reflexionVector(Vector3D N, Vector3D L) {
+  // L.multiply(-1);
+
+  // auto constant = N.dotProduct(L) * 2;
+  // N.multiply(constant);
+  // Vector3D result = Vector3D(L.x - N.x, L.y - N.y, L.z - N.z);
+  // result.normalize();
+
+  // return result;
+
   auto constant = N.dotProduct(L) * 2;
   N.multiply(constant);
   Vector3D auxVet;
@@ -218,23 +227,40 @@ Vector3D Scene::reflexionVector(Vector3D N, Vector3D L) {
 }
 
 Vector3D Scene::refractionVector(Vector3D incident, Vector3D normal) {
-  float cosTheta1 = incident.dotProduct(normal) * -1;
-  float eta = 1.4;
-  float sinTheta2 = eta * eta * (1 - cosTheta1 * cosTheta1);
+  float eta = 1;
+
+  incident.multiply(-1);
+  incident.normalize();
+  normal.normalize();
+
+  float cosTheta1 = incident.dotProduct(normal);
+
+  if (cosTheta1 < 0) {
+      // If the ray is coming from inside the material, flip the normal and inverse eta
+      normal.multiply(-1);
+      eta = 1 / eta;
+      cosTheta1 = incident.dotProduct(normal);
+  }
+
+  float sinTheta1 = sqrt(1 - cosTheta1 * cosTheta1);
+  float sinTheta2 = eta * sinTheta1;
 
   if (sinTheta2 > 1) {
       // Total internal reflection
       return Vector3D(0, 0, 0);
   }
-  
-  float cosTheta2 = sqrt(1.0 - sinTheta2);
 
-  incident.multiply(eta);
+  float cosTheta2 = sqrt(1 - sinTheta2 * sinTheta2);
+
+  Vector3D transmission = incident;
+  transmission.multiply(eta);
+
   normal.multiply(eta * cosTheta1 - cosTheta2);
-  incident.sumVector(normal);
-  incident.normalize();
 
-  return incident;
+  transmission.sumVector(normal);
+  transmission.normalize();
+
+  return transmission;
 }
 
 bool Scene::shadowIntercept(Point3D point, Vector3D vector, float interceptDistance) {
