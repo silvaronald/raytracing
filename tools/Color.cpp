@@ -6,6 +6,8 @@ Color::Color (float red, float green, float blue) {
     this->green = green;
 
     this->blue = blue;
+    normalize();
+    truncate();
 }
 
 Color::Color() {
@@ -35,27 +37,17 @@ void Color::sumColor(Color color) {
 }
 
 void Color::multiplyValue(float value) {
+
     this->red *= value;
     this->green *= value;
-
     this->blue *= value;
-
-    truncate();
-}
-
-void Color::setColor (float red, float green, float blue) {
-    this->red = red;
-
-    this->green = green;
-
-    this->blue = blue;
 
     truncate();
 }
 
 void Color::truncate () {
     if (this->red < 0) {
-        this->red = 0;
+    this->red = 0;
     }
     else if (this->red > 1) {
         this->red = 1;
@@ -68,11 +60,11 @@ void Color::truncate () {
         this->green = 1;
     }
 
-    if (this->green < 0) {
-        this->green = 0;
+    if (this->blue < 0) {
+        this->blue = 0;
     }
-    else if (this->green > 1) {
-        this->green = 1;
+    else if (this->blue > 1) {
+        this->blue = 1;
     }
 }
 

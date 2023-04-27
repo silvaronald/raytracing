@@ -3,8 +3,9 @@
 
 #include "../tools/Point3D.h"
 #include "../tools/Color.h"
-#include "Triangle.h"
+#include "../tools/Vector3D.h"
 
+#include <iostream>
 #include <vector>
 #include <optional>
 #include <cstddef>
@@ -15,14 +16,12 @@ using namespace std;
 
 class TriangleMesh {
 public:
-    int numTriangles;
-    int numVertices;
     vector<Point3D> vertices;
-    vector<Triangle> triangles;
+    vector<std::tuple<int, int, int>> triangleVertices;
     vector<Vector3D> triangleNormals;
     vector<Vector3D> vertexNormals;
-    Color color = Color(0, 0, 0);
 
+    Color color = Color(0, 0, 0);
     float diffuseCoefficient;
     float specularCoefficient;
     float ambientCoefficient;
@@ -32,12 +31,8 @@ public:
 
     TriangleMesh();
     TriangleMesh(
-        int numTriangles, 
-        int numVertices, 
         vector<Point3D> vertices,
-        vector<Triangle> triangles,
-        vector<Vector3D> triangleNormals,
-        vector<Vector3D> vertexNormals, 
+        vector<std::tuple<int, int, int>> triangleVertices,
         Color color,
         float diffuseCoefficient, 
         float specularCoefficient,
@@ -46,7 +41,7 @@ public:
         float transmissionCoefficient,
         float rugosityCoefficient);
     
-    std::optional<std::tuple<Triangle, Point3D, TriangleMesh>> intercept(Point3D point, Vector3D vector);
+    std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> intercept(Point3D point, Vector3D vector);
 };
 
 #endif /* TRIANGLEMESH_H */

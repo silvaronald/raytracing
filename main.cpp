@@ -6,7 +6,6 @@
 #include "scene/Sphere.h"
 #include "scene/Plane.h"
 #include "scene/TriangleMesh.h"
-#include "scene/Triangle.h"
 #include "scene/Scene.h"
 #include "tools/Matrix4X4.h"
 #include "tools/MatrixOperations.h"
@@ -18,6 +17,7 @@
 #include <cmath>
 #include <fstream>
 #include <string>
+#include <tuple>
 
 vector<Sphere> spheres;
 vector<Plane> planes;
@@ -27,7 +27,6 @@ Color ambientColor;
 Camera camera;
 
 void readFile();
-vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices);
 
 int main()
 {
@@ -35,7 +34,7 @@ int main()
     readFile();
 
     // Create scene object
-    Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights);
+    Scene scene = Scene(ambientColor, spheres, planes, trianglesMesh, lights, camera);
 
     cout << "Scene created!" << endl;
 
@@ -55,7 +54,12 @@ int main()
     float halfScreenHeight = screenHeight / 2.0f;
     float rowStart = (screenHeight % 2 == 0 ? halfScreenHeight - 0.5f : std::ceil(halfScreenHeight));
 
-    #pragma omp parallel for schedule(dynamic) // Use parallelism (nem sei se funciona)
+    //#pragma omp parallel for schedule(dynamic) // Use parallelism (nem sei se funciona)
+
+    Vector3D distVector = camera.vectorW;
+    distVector.multiply(camera.distanceToScreen);
+
+    Point3D initialScreenPoint = camera.target.sumVectorToPoint(distVector);
 
     Vector3D distVector = camera.vectorW;
     distVector.multiply(camera.distanceToScreen);
@@ -81,6 +85,7 @@ int main()
             Vector3D cameraToPixel = camera.localization.getVectorToPoint(pixelPoint);
 
             Color color = scene.intercept(camera.localization, cameraToPixel);
+            color.denormalize();
 
             outfile << static_cast<char>(color.red) << static_cast<char>(color.green) << static_cast<char>(color.blue);
         }
@@ -127,32 +132,31 @@ void readFile()
             {
                 int nt, nv;
                 sscanf(linha.c_str(), "t %d %d", &nt, &nv);
-                vector<Point3D> vertices;
-                vector<Triangle> triangles;
-                // Lê os vértices
-                for (int i = 0; i < nv; i++)
-                {
+                vector<Point3D> vertexes;
+                std::vector<std::tuple<int, int, int>> trianglesVertexes;
+
+                //Lê os vértices
+                for (int i = 0; i < nv; i++) {
                     std::getline(arquivo, linha);
                     float v1, v2, v3;
                     sscanf(linha.c_str(), "%f %f %f", &v1, &v2, &v3);
-                    vertices.push_back(Point3D(v1, v2, v3));
+                    vertexes.push_back(Point3D(v1, v2, v3));
                 }
-                // Lê os triangulos
-                for (int i = 0; i < nt; i++)
-                {
+
+                //Lê os triangulos
+                for (int i = 0; i < nt; i++) {
                     std::getline(arquivo, linha);
                     int x, y, z;
                     sscanf(linha.c_str(), "%d %d %d", &x, &y, &z);
 
-                    triangles.push_back(Triangle(vertices[x - 1], vertices[y - 1], vertices[z - 1]));
+                    trianglesVertexes.push_back(std::make_tuple(x - 1, y - 1, z - 1));
                 }
                 // Lê as propriedades do material
                 std::getline(arquivo, linha);
                 sscanf(linha.c_str(), "%f %f %f %f %f %f %f %f %f", &Or, &Og, &Ob, &Kd, &Ks, &Ka, &Kr, &Kt, &P);
-                // Calcula as normais dos triangulos e dos vertices
-                vector<Vector3D> vertexNormals, triangleNormals = getNormals(triangles, vertices);
-                // Adiciona a malha de triangulos a lista de malhas de triangulos
-                trianglesMesh.push_back(TriangleMesh(nt, nv, vertices, triangles, triangleNormals, vertexNormals, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
+                
+                //Adiciona a malha de triangulos a lista de malhas de triangulos
+                trianglesMesh.push_back(TriangleMesh(vertexes, trianglesVertexes, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
             }
 
             // Verifica se a linha é uma camera e cria a camera
@@ -189,40 +193,5 @@ void readFile()
         arquivo.close();
     }
 
-    else
-        std::cout << "Unable to open file";
-}
-
-vector<Vector3D> getNormals(vector<Triangle> triangles, vector<Point3D> vertices)
-{
-    vector<Vector3D> triangleNormals, vertexNormals;
-    // Cria um array de normais de triangulos
-    for (int i = 0; i < triangles.size(); i++)
-    {
-        Vector3D v1 = triangles[i].p1.getVectorToPoint(triangles[i].p2);
-        Vector3D v2 = triangles[i].p1.getVectorToPoint(triangles[i].p3);
-        Vector3D normal = v1.crossProduct(v2);
-        normal.normalize();
-        triangleNormals.push_back(normal);
-    }
-    for (int i = 0; i < vertices.size(); i++)
-    {
-        // Cria um array de normais de vertices onde cada normal é a média das normais dos triangulos que o contem
-        Vector3D normal = Vector3D(0, 0, 0);
-        int count = 0;
-        for (int j = 0; j < triangles.size(); j++)
-        {
-            if (triangles[j].p1.x == vertices[i].x && triangles[j].p1.y == vertices[i].y && triangles[j].p1.z == vertices[i].z || triangles[j].p2.x == vertices[i].x && triangles[j].p2.y == vertices[i].y && triangles[j].p2.z == vertices[i].z || triangles[j].p3.x == vertices[i].x && triangles[j].p3.y == vertices[i].y && triangles[j].p3.z == vertices[i].z)
-            {
-                normal.x += triangleNormals[j].x;
-                normal.y += triangleNormals[j].y;
-                normal.z += triangleNormals[j].z;
-                count++;
-            }
-        }
-        normal.multiply(1.0 / count);
-        normal.normalize();
-        vertexNormals.push_back(normal);
-    }
-    return vertexNormals, triangleNormals;
+    else std::cout << "Unable to open file";
 }

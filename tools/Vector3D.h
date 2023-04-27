@@ -15,6 +15,7 @@ public:
     float getNorm ();
     float dotProduct (Vector3D vector2);
     Vector3D projectOnto (Vector3D vector2);
+    void sumVector (Vector3D vector2);
 };
 
 #endif /* VECTOR3D_H */
