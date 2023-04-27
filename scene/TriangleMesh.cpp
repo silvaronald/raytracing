@@ -113,7 +113,7 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
         double gamma = 1 - alpha - beta;
 
         const double TOLERANCE = 1e-9;
-        if (alpha > 0 && beta > 0 && gamma > 0 && std::abs(alpha + beta + gamma - 1.0) < TOLERANCE) {
+        if (alpha >= 0 && beta >= 0 && gamma >= 0 && std::abs(alpha + beta + gamma - 1.0) < TOLERANCE) {
             
             // Create the tuple with the point normal vector, intersection point, and mesh
             std::tuple<Vector3D, Point3D, TriangleMesh> tuple(vertexNormals[i], intersectionPoint, *this);

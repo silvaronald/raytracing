@@ -60,12 +60,6 @@ void Color::truncate () {
         this->green = 1;
     }
 
-    if (this->green < 0) {
-        this->green = 0;
-    }
-    else if (this->green > 1) {
-        this->green = 1;
-    }
     if (this->blue < 0) {
         this->blue = 0;
     }
