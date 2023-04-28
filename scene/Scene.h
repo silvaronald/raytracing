@@ -24,7 +24,7 @@ public:
     std::vector<Plane> planes;
     std::vector<TriangleMesh> trianglesMeshes;
     std::vector<Light> lights;
-    int depth = 7;
+    int depth = 4;
 
     Camera camera;
 

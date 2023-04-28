@@ -61,11 +61,6 @@ int main()
 
     Point3D initialScreenPoint = camera.target.sumVectorToPoint(distVector);
 
-    Vector3D distVector = camera.vectorW;
-    distVector.multiply(camera.distanceToScreen);
-
-    Point3D initialScreenPoint = camera.target.sumVectorToPoint(distVector);
-
     for (int i = 0; i < screenHeight; i++) {
         float y = rowStart - i;
 

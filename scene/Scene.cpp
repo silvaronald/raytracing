@@ -227,7 +227,7 @@ Vector3D Scene::reflexionVector(Vector3D N, Vector3D L) {
 }
 
 Vector3D Scene::refractionVector(Vector3D incident, Vector3D normal) {
-  float eta = 1;
+  float eta = 1.5;
 
   incident.multiply(-1);
   incident.normalize();
@@ -256,6 +256,7 @@ Vector3D Scene::refractionVector(Vector3D incident, Vector3D normal) {
   transmission.multiply(eta);
 
   normal.multiply(eta * cosTheta1 - cosTheta2);
+  normal.multiply(-1);
 
   transmission.sumVector(normal);
   transmission.normalize();
