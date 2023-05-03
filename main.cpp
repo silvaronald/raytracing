@@ -27,6 +27,7 @@ Color ambientColor;
 Camera camera;
 
 void readFile();
+TriangleMesh BezierSurfaceTriangularization (vector<vector<Point3D>> curves);
 
 int main()
 {
@@ -182,6 +183,34 @@ void readFile()
                 sscanf(linha.c_str(), "a %f %f %f", &Ir, &Ig, &Ib);
                 ambientColor = Color(Ir, Ig, Ib);
             }
+
+            // Verifica se a linha é uma superfície de Bézier
+            if (linha[0] == 'b')
+            {
+                int ncurves, npoints;
+                sscanf(linha.c_str(), "b %d %d", &ncurves, &npoints);
+
+                vector<vector<Point3D>> curves;
+
+                for (int i = 0; i < ncurves; i++) {
+                    vector<Point3D> points;
+
+                    for (int j = 0; j < npoints; j++) {
+                        Point3D p;
+                        
+                        std::getline(arquivo, linha);
+                        sscanf(linha.c_str(), "%f %f %f", &p.x, &p.y, &p.z);
+
+                        points.push_back(p);
+                    }
+
+                    curves.push_back(points);
+                }
+
+                std::getline(arquivo, linha);
+                sscanf(linha.c_str(), "%f %f %f %f %f %f %f %f %f", &Or, &Og, &Ob, &Kd, &Ks, &Ka, &Kr, &Kt, &P);
+                
+            }
         }
 
         // Fecha o arquivo
@@ -189,4 +218,8 @@ void readFile()
     }
 
     else std::cout << "Unable to open file";
+}
+
+TriangleMesh BezierSurfaceTriangularization (vector<vector<Point3D>> curves) {
+
 }
