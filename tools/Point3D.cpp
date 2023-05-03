@@ -14,13 +14,6 @@ Point3D::Point3D(float x, float y, float z) {
     this->z = z;
 }
 
-Point3D Point3D::setCoordinates(float x, float y, float z) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    return *this;
-}
-
 Point3D Point3D::sumVectorToPoint(Vector3D vector) {
     return Point3D(this->x + vector.x, this->y + vector.y, this->z + vector.z);
 }
@@ -37,4 +30,8 @@ void Point3D::sumPoint(Point3D point2) {
     this->x += point2.x;
     this->y += point2.y;
     this->z += point2.z;
+}
+
+Point3D Point3D::multiply(float factor) {
+    return Point3D(this->x * factor, this->y * factor, this->z * factor);
 }

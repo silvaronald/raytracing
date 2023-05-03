@@ -1,4 +1,7 @@
 #include "TriangleMesh.h"
+#include <tuple>
+
+float combination(float n, float k);
 
 TriangleMesh::TriangleMesh () {};
 TriangleMesh::TriangleMesh(
@@ -23,8 +26,77 @@ TriangleMesh::TriangleMesh(
     this->vertices = vertices;
     this->triangleVertices = triangleVertices;
 
+    this->calculateNormals();
+}
+
+TriangleMesh::TriangleMesh(
+        vector<vector<Point3D>> curves,
+        Color color,
+        float diffuseCoefficient, 
+        float specularCoefficient,
+        float ambientCoefficient,
+        float reflectionCoefficient,
+        float transmissionCoefficient,
+        float rugosityCoefficient) {
+    
+    this->color = color;
+    this->diffuseCoefficient = diffuseCoefficient;
+    this->specularCoefficient = specularCoefficient;
+    this->ambientCoefficient = ambientCoefficient;
+    this->reflectionCoefficient = reflectionCoefficient;
+    this->transmissionCoefficient = transmissionCoefficient;
+    this->rugosityCoefficient = rugosityCoefficient;
+
+    vector<Point3D> surfacePoints;
+
+    int n = curves[0].size() - 1;
+
+    // Use Bernstein iteratively to calculate surface points
+    for (float t0 = 0.f; t0 <= 1.f; t0 += this->bezierThreshold) {
+        vector<Point3D> controlPoints;
+
+        for (auto curvePoints: curves) {
+            Point3D controlPoint;
+
+            // Bernstein
+            for (int i = 0; i <= n; i++) {
+                Point3D point = curvePoints[i];
+
+                point = point.multiply(combination(n, i) * std::pow(t0, i) * std::pow(1 - t0, n - i));
+
+                controlPoint.sumPoint(point);
+            }
+
+            controlPoints.push_back(controlPoint);
+        }
+
+        for (float t1 = 0.f; t1 <= 1.f; t1 += this->bezierThreshold) {
+            Point3D surfacePoint;
+
+            for (int i = 0; i <= n; i++) {
+                Point3D controlPoint = controlPoints[i];
+
+                controlPoint = controlPoint.multiply(combination(n, i) * std::pow(t1, i) * std::pow(1 - t1, n - i));
+
+                surfacePoint.sumPoint(controlPoint);
+            }
+
+            surfacePoints.push_back(surfacePoint);
+        } 
+    }
+
+    this->vertices = surfacePoints;
+
+    for (int i = 0; i < surfacePoints.size() - 2; i++) {
+        this->triangleVertices.push_back(std::make_tuple(i, i+1, i+2));
+    }
+
+    this->calculateNormals();
+};
+
+void TriangleMesh::calculateNormals() {
     // initialize vertex normals
-    for (int i = 0; i < vertices.size(); i++) {
+    for (int i = 0; i < this->vertices.size(); i++) {
         this->vertexNormals.push_back(Vector3D());
     }
     // get triangles' normals
@@ -159,4 +231,19 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
     }
 
     return result;
+}
+
+float combination(float n, float k) {
+    if (k == 0 || k == n) {
+        return 1;
+    } else if (k > n) {
+        return 0;
+    } else {
+        float result = 1;
+        for (int i = 1; i <= k; ++i) {
+            result *= n - k + i;
+            result /= i;
+        }
+        return result;
+    }
 }

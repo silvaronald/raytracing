@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <limits>
 #include <tuple>
+#include <cmath>
 
 using namespace std;
 
@@ -29,6 +30,8 @@ public:
     float transmissionCoefficient;
     float rugosityCoefficient;
 
+    float bezierThreshold = 0.1;
+
     TriangleMesh();
     TriangleMesh(
         vector<Point3D> vertices,
@@ -40,8 +43,19 @@ public:
         float reflectionCoefficient,
         float transmissionCoefficient,
         float rugosityCoefficient);
+    // Used for bezier surfaces
+    TriangleMesh(
+        vector<vector<Point3D>> curves,
+        Color color,
+        float diffuseCoefficient, 
+        float specularCoefficient,
+        float ambientCoefficient,
+        float reflectionCoefficient,
+        float transmissionCoefficient,
+        float rugosityCoefficient);
     
     std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> intercept(Point3D point, Vector3D vector);
+    void calculateNormals();
 };
 
 #endif /* TRIANGLEMESH_H */

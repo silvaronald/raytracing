@@ -27,7 +27,6 @@ Color ambientColor;
 Camera camera;
 
 void readFile();
-TriangleMesh BezierSurfaceTriangularization (vector<vector<Point3D>> curves);
 
 int main()
 {
@@ -210,6 +209,7 @@ void readFile()
                 std::getline(arquivo, linha);
                 sscanf(linha.c_str(), "%f %f %f %f %f %f %f %f %f", &Or, &Og, &Ob, &Kd, &Ks, &Ka, &Kr, &Kt, &P);
                 
+                trianglesMesh.push_back(TriangleMesh(curves, Color(Or, Og, Ob), Kd, Ks, Ka, Kr, Kt, P));
             }
         }
 
@@ -218,8 +218,4 @@ void readFile()
     }
 
     else std::cout << "Unable to open file";
-}
-
-TriangleMesh BezierSurfaceTriangularization (vector<vector<Point3D>> curves) {
-
 }
