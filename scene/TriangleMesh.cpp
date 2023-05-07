@@ -1,4 +1,5 @@
 #include "TriangleMesh.h"
+#include <memory>
 #include <tuple>
 
 float combination(float n, float k);
@@ -49,41 +50,68 @@ TriangleMesh::TriangleMesh(
 
     vector<Point3D> surfacePoints;
 
-    int n = curves[0].size() - 1;
+    int nCurves = curves.size();
+    int nPoints = curves[0].size();
+
+    for (float t0 = 0; t0 <= 1.f; t0 += this->bezierThreshold) {
+        for (float t1 = 0; t1 <= 1.f; t1 += this->bezierThreshold) {
+            Point3D resultPoint;
+
+            for (int i = 0; i < nCurves; i++) {
+                float f1 = combination(nCurves - 1, i) * std::pow(t0, i) * std::pow(1 - t0, nCurves - 1 - i);
+                
+                Point3D innerPoint;
+
+                for (int j = 0; j < nPoints; j++) {
+                    Point3D point = curves[i][j];
+
+                    float f2 = combination(nPoints - 1, j) * std::pow(t1, j) * std::pow(1 - t1, nPoints - 1 - j);
+                    
+                    point = point.multiply(f2);
+
+                    innerPoint.sumPoint(point);
+                }
+
+                resultPoint.sumPoint(innerPoint.multiply(f1));
+            }
+
+            surfacePoints.push_back(resultPoint);
+        }
+    }
 
     // Use Bernstein iteratively to calculate surface points
-    for (float t0 = 0.f; t0 <= 1.f; t0 += this->bezierThreshold) {
-        vector<Point3D> controlPoints;
+    // for (float t0 = 0.f; t0 <= 1.f; t0 += this->bezierThreshold) {
+    //     vector<Point3D> controlPoints;
 
-        for (auto curvePoints: curves) {
-            Point3D controlPoint;
+    //     for (auto curvePoints: curves) {
+    //         Point3D controlPoint;
 
-            // Bernstein
-            for (int i = 0; i <= n; i++) {
-                Point3D point = curvePoints[i];
+    //         // Bernstein
+    //         for (int i = 0; i <= n; i++) {
+    //             Point3D point = curvePoints[i];
 
-                point = point.multiply(combination(n, i) * std::pow(t0, i) * std::pow(1 - t0, n - i));
+    //             point = point.multiply(combination(n, i) * std::pow(t0, i) * std::pow(1 - t0, n - i));
 
-                controlPoint.sumPoint(point);
-            }
+    //             controlPoint.sumPoint(point);
+    //         }
 
-            controlPoints.push_back(controlPoint);
-        }
+    //         controlPoints.push_back(controlPoint);
+    //     }
 
-        for (float t1 = 0.f; t1 <= 1.f; t1 += this->bezierThreshold) {
-            Point3D surfacePoint;
+    //     for (float t1 = 0.f; t1 <= 1.f; t1 += this->bezierThreshold) {
+    //         Point3D surfacePoint;
 
-            for (int i = 0; i <= n; i++) {
-                Point3D controlPoint = controlPoints[i];
+    //         for (int i = 0; i <= n; i++) {
+    //             Point3D controlPoint = controlPoints[i];
 
-                controlPoint = controlPoint.multiply(combination(n, i) * std::pow(t1, i) * std::pow(1 - t1, n - i));
+    //             controlPoint = controlPoint.multiply(combination(n, i) * std::pow(t1, i) * std::pow(1 - t1, n - i));
 
-                surfacePoint.sumPoint(controlPoint);
-            }
+    //             surfacePoint.sumPoint(controlPoint);
+    //         }
 
-            surfacePoints.push_back(surfacePoint);
-        } 
-    }
+    //         surfacePoints.push_back(surfacePoint);
+    //     } 
+    // }
 
     this->vertices = surfacePoints;
 

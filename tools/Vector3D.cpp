@@ -36,10 +36,12 @@ Vector3D Vector3D::crossProduct(Vector3D vector2) {
 
 void Vector3D::normalize() {
     float norm = this->getNorm();
-
-    this->x /= norm;
-    this->y /= norm;
-    this->z /= norm;
+    
+    if (norm != 0) {
+        this->x /= norm;
+        this->y /= norm;
+        this->z /= norm;
+    }
 }
 
 float Vector3D::getNorm() {

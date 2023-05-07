@@ -118,6 +118,7 @@ Color Scene::intercept(Point3D point, Vector3D vector, int depth) {
         interceptedPlane.transmissionCoefficient,
         interceptedPlane.rugosityCoefficient, interceptedPoint, depth);
   } else if (interceptedObject == "triangle") {
+    cout << "hitou1";
     if (normalVector.dotProduct(interceptedPoint.getVectorToPoint(point)) < 0) {
       normalVector.multiply(-1);
     }

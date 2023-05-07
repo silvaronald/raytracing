@@ -30,7 +30,7 @@ public:
     float transmissionCoefficient;
     float rugosityCoefficient;
 
-    float bezierThreshold = 0.1;
+    float bezierThreshold = 0.2;
 
     TriangleMesh();
     TriangleMesh(
