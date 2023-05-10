@@ -118,7 +118,6 @@ Color Scene::intercept(Point3D point, Vector3D vector, int depth) {
         interceptedPlane.transmissionCoefficient,
         interceptedPlane.rugosityCoefficient, interceptedPoint, depth);
   } else if (interceptedObject == "triangle") {
-    cout << "hitou1";
     if (normalVector.dotProduct(interceptedPoint.getVectorToPoint(point)) < 0) {
       normalVector.multiply(-1);
     }
@@ -217,14 +216,6 @@ Vector3D Scene::reflexionVector(Vector3D N, Vector3D L) {
   result.normalize();
 
   return result;
-
-  // auto constant = N.dotProduct(L) * 2;
-  // N.multiply(constant);
-  // Vector3D auxVet;
-  // auxVet.setVector(N.x - L.x, N.y - L.y, N.z - L.z);
-  // auxVet.normalize();
-
-  // return auxVet;
 }
 
 Vector3D Scene::refractionVector(Vector3D incident, Vector3D normal) {

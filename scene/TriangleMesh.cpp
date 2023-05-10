@@ -112,7 +112,6 @@ void TriangleMesh::calculateNormals() {
         Vector3D barycenterToVertex = barycenter.getVectorToPoint(this->vertices[get<0>(t)]);
 
         if (barycenterToVertex.dotProduct(normal) < 0) {
-            cout << "caiu aq\n";
             normal.multiply(-1);
         }
 
