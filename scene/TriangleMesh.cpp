@@ -79,40 +79,6 @@ TriangleMesh::TriangleMesh(
         }
     }
 
-    // Use Bernstein iteratively to calculate surface points
-    // for (float t0 = 0.f; t0 <= 1.f; t0 += this->bezierThreshold) {
-    //     vector<Point3D> controlPoints;
-
-    //     for (auto curvePoints: curves) {
-    //         Point3D controlPoint;
-
-    //         // Bernstein
-    //         for (int i = 0; i <= n; i++) {
-    //             Point3D point = curvePoints[i];
-
-    //             point = point.multiply(combination(n, i) * std::pow(t0, i) * std::pow(1 - t0, n - i));
-
-    //             controlPoint.sumPoint(point);
-    //         }
-
-    //         controlPoints.push_back(controlPoint);
-    //     }
-
-    //     for (float t1 = 0.f; t1 <= 1.f; t1 += this->bezierThreshold) {
-    //         Point3D surfacePoint;
-
-    //         for (int i = 0; i <= n; i++) {
-    //             Point3D controlPoint = controlPoints[i];
-
-    //             controlPoint = controlPoint.multiply(combination(n, i) * std::pow(t1, i) * std::pow(1 - t1, n - i));
-
-    //             surfacePoint.sumPoint(controlPoint);
-    //         }
-
-    //         surfacePoints.push_back(surfacePoint);
-    //     } 
-    // }
-
     this->vertices = surfacePoints;
 
     for (int i = 0; i < surfacePoints.size() - 2; i++) {
@@ -141,11 +107,12 @@ void TriangleMesh::calculateNormals() {
         barycenter.sumPoint(this->vertices[get<1>(t)]);
         barycenter.sumPoint(this->vertices[get<2>(t)]);
 
-        barycenter.x /= 3.f; barycenter.y /= 3.f; barycenter.z /= 3.f;
+        barycenter.multiply((1.0 / 3.0));
 
         Vector3D barycenterToVertex = barycenter.getVectorToPoint(this->vertices[get<0>(t)]);
 
         if (barycenterToVertex.dotProduct(normal) < 0) {
+            cout << "caiu aq\n";
             normal.multiply(-1);
         }
 
@@ -196,9 +163,10 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
             continue;
         }
         
-        vector.multiply(t);
+        Vector3D distVector = vector;
+        distVector.multiply(t);
 
-        Point3D intersectionPoint = point.sumVectorToPoint(vector);
+        Point3D intersectionPoint = point.sumVectorToPoint(distVector);
         
         float distance = intersectionPoint.distanceToPoint(point);
 
@@ -212,9 +180,6 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
         Vector3D normal = V1.crossProduct(V2);
         Vector3D P = P0.getVectorToPoint(intersectionPoint);
 
-        // Vector3D C1 = V1.crossProduct(P);
-        // Vector3D C2 = V1.crossProduct(P);
-
         double d00 = V1.dotProduct(V1);
         double d01 = V1.dotProduct(V2);
         double d11 = V2.dotProduct(V2);
@@ -226,11 +191,8 @@ std::optional<std::tuple<Vector3D, Point3D, TriangleMesh>> TriangleMesh::interce
         double beta = (d11 * d20 - d01 * d21) / denom2;
         double gamma = (d00 * d21 - d01 * d20) / denom2;
         double alpha = 1.0 - beta - gamma;
-        // float beta = C1.getNorm() / triangleNormal.getNorm();
-        // float gamma = C2.getNorm() / triangleNormal.getNorm();
-        // float alpha = 1.f - beta - gamma;
 
-        if (alpha >= 0.f && alpha <= 1.f && beta >= 0.f && beta <= 1.f && gamma >= 0.f && gamma <= 1.f) {
+        if (beta >= 0.f && gamma >= 0.f && (gamma + beta) <= 1.f) {
             // Create the tuple with the point normal vector, intersection point, and mesh
             Vector3D normalVector;
             Vector3D alphaVector = vertexNormals[get<0>(this->triangleVertices[i])];

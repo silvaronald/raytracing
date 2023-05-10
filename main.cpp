@@ -78,6 +78,7 @@ int main()
             Point3D pixelPoint = screenPoint.sumVectorToPoint(horizontalVector);
 
             Vector3D cameraToPixel = camera.localization.getVectorToPoint(pixelPoint);
+            cameraToPixel.normalize();
 
             Color color = scene.intercept(camera.localization, cameraToPixel);
             color.denormalize();

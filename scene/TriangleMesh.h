@@ -12,6 +12,7 @@
 #include <limits>
 #include <tuple>
 #include <cmath>
+#include <numeric>
 
 using namespace std;
 
@@ -30,7 +31,7 @@ public:
     float transmissionCoefficient;
     float rugosityCoefficient;
 
-    float bezierThreshold = 0.2;
+    float bezierThreshold = 0.1;
 
     TriangleMesh();
     TriangleMesh(
