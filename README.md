@@ -1,1 +1,1 @@
-# raycasting
+# Raytracing algorithm from scratch
